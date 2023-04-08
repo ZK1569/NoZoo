@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo
+    container_name: BDD
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - db-data:/data/db
+  node-app:
+    container_name: app
+    build: ./services/api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./services/api:/app
+    environment:
+      - PORT=5173
+    env_file:
+      - ./services/api/.env
+
+volumes:
+  db-data:
