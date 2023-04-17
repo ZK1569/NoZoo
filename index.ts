@@ -1,19 +1,14 @@
 import {config} from "dotenv";
 config();
-import mongoose from "mongoose"
-import { Model } from "mongoose";
+import * as mongoDB from "mongodb";
 import * as express from 'express'
 const app = express()
 
-async function startServer():Promise<void> {
-    const connexion = await mongoose.connect(process.env.MONGODB_URI as string,{
-        auth:{
-            username: process.env.MONGODB_USER as string,
-            password: process.env.MONGODB_PASSWORD as string
-        },
-        authSource: "root"
-    });
-    console.log(connexion);
+async function connectToDatabase () { 
+    const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.MONGODB_URI as string);
+            
+    await client.connect();
+    console.log(`Successfully connected to database: ${process.env.MONGODB_URI}`);
 }
 
 //startServer()
@@ -26,8 +21,9 @@ app.listen(process.env.PORT, () => {
     console.log('Server up on port ' + process.env.PORT);
 })
 
-startServer().catch(function(err):void{
+connectToDatabase().catch(function(err):void{
     console.log(err);
 });
 
 console.log("everything fine");
+console.log(process.env.MONGODB_URI);
