@@ -1,29 +1,30 @@
 import {config} from "dotenv";
 config();
-import * as mongoDB from "mongodb";
-import * as express from 'express'
-const app = express()
 
-async function connectToDatabase () { 
-    const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.MONGODB_URI as string);
-            
-    await client.connect();
-    console.log(`Successfully connected to database: ${process.env.MONGODB_URI}`);
+import * as express from 'express'
+import * as mongoose from 'mongoose'
+import { Response, Request} from "express"
+
+const startServer = async (): Promise<void> => {
+    const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
+            username: process.env.MANGODB_USER as string,
+            password: process.env.MANGODB_PASSWORD as string
+        },
+        authSource: "admin"
+    })
+    
+    const app = express()
+
+    app.get("/", (req:Request, res:Response) => {
+        res.send('Server up')
+    })
+    
+    app.listen(process.env.PORT, () => {
+        console.log(`Server up on PORT : ${process.env.PORT}`)
+    })
+       
 }
 
-//startServer()
-
-app.get('/', (req, res) => {
-    res.status(200).send('OK on vas a la pèche')
+startServer().catch((err) => {
+    console.error(err)
 })
-
-app.listen(process.env.PORT, () => {
-    console.log('Server up on port ' + process.env.PORT);
-})
-
-connectToDatabase().catch(function(err):void{
-    console.log(err);
-});
-
-console.log("everything fine");
-console.log(process.env.MONGODB_URI);
