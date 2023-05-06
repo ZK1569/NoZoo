@@ -19,8 +19,8 @@ const startServer = async (): Promise<void> => {
         res.send('Server up')
     })
     
-    app.listen(3000, () => {
-        console.log("OK server")
+    app.listen(process.env.PORT, () => {
+        console.log(`Server up on PORT : ${process.env.PORT}`)
     })
        
 }
