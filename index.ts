@@ -4,6 +4,8 @@ config();
 import * as express from 'express'
 import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
+import { UserController } from "./controller/user.controller";
+import { RoleModel } from "./models";
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -12,17 +14,38 @@ const startServer = async (): Promise<void> => {
         },
         authSource: "admin"
     })
+
+    await upsertRoles()
     
     const app = express()
 
     app.get("/", (req:Request, res:Response) => {
         res.send('Server up')
     })
+
+    const userController = new UserController()
+
+    app.use(userController.path, userController.buildRouter())
     
     app.listen(process.env.PORT, () => {
         console.log(`Server up on PORT : ${process.env.PORT}`)
     })
        
+}
+
+const upsertRoles = async () => {
+    const countRoles = await RoleModel.count().exec()
+    if(countRoles !== 0 ){
+        return 
+    }
+
+    const rolesNames: string[] = ["admin", "guest"]
+    const rolesRequest = rolesNames.map((name) => {
+        RoleModel.create({
+            name
+        })
+    })
+    await Promise.all(rolesRequest)
 }
 
 startServer().catch((err) => {

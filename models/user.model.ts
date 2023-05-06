@@ -1,4 +1,5 @@
-import mongoose, { Schema, Document, Model, Date } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
+import { Role } from "./role.model";
 
 const userShemma = new Schema<User>({
     login: {
@@ -13,7 +14,7 @@ const userShemma = new Schema<User>({
     },
     roles:[{
         type: Schema.Types.ObjectId,
-        ref: "Roles",
+        ref: "Role",
         required: true
     }]
 }, {
@@ -24,7 +25,7 @@ const userShemma = new Schema<User>({
 export interface User{
     login: string,
     password: string,
+    roles: string[] | Role[]
 }
-
 
 export const UserModel: Model<User> = mongoose.model("User", userShemma)
