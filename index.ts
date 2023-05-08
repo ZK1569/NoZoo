@@ -6,7 +6,7 @@ import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
 import { UserController } from "./controller/user.controller";
 import { RoleModel } from "./models";
-import { log } from "./middleware";
+import morgan = require("morgan");
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -20,7 +20,7 @@ const startServer = async (): Promise<void> => {
     
     const app = express()
 
-    app.use(log())
+    app.use(morgan("short"))
 
     app.get("/", (req:Request, res:Response) => {
         res.send('Server up')
