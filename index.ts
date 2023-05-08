@@ -6,6 +6,7 @@ import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
 import { UserController } from "./controller/user.controller";
 import { RoleModel } from "./models";
+import { log } from "./middleware";
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -18,6 +19,8 @@ const startServer = async (): Promise<void> => {
     await upsertRoles()
     
     const app = express()
+
+    app.use(log())
 
     app.get("/", (req:Request, res:Response) => {
         res.send('Server up')
