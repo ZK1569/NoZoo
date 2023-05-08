@@ -92,6 +92,19 @@ export class UserController {
         });
     }
 
+    logout = async (req:Request, res:Response): Promise<void> => {
+        const session = req.session
+
+        if (!session){
+            res.status(401).end(); // unauthorized
+            return;
+        }
+
+        const delSession = await SessionModel.deleteOne({_id: session})
+
+        res.status(200).end()
+    }
+
     me = async (req:Request, res: Response) => {
         res.json(req.user)
     }
@@ -100,6 +113,7 @@ export class UserController {
         const router = express.Router()
         router.post(`/subscribe`, express.json(), this.subscribe.bind(this))
         router.post('/login', express.json(), this.login.bind(this))
+        router.delete('/logout', checkUserToken(), this.logout.bind(this))
         router.get('/me', checkUserToken(), this.me.bind(this))
 
         return router
