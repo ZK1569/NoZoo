@@ -39,7 +39,7 @@ const upsertRoles = async () => {
         return 
     }
 
-    const rolesNames: string[] = ["admin", "guest"]
+    const rolesNames: string[] = ["admin", "guest", "receptionist", "veterinarian", "maintenance agent", "seller"]
     const rolesRequest = rolesNames.map((name) => {
         RoleModel.create({
             name
