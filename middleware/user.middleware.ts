@@ -4,6 +4,7 @@ import {SessionModel, User} from "../models";
 declare module 'express' {
     export interface Request {
         user?: User;
+        session?: string;
     }
 }
 
@@ -30,7 +31,9 @@ export function checkUserToken(): RequestHandler {
             res.status(401).end(); // unauthorized
             return;
         }
+        
         req.user = session.user as User;
+        req.session = session._id.toString() as string
         next();
     };
 }
