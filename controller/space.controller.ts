@@ -31,8 +31,8 @@ export class SpacesController {
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.post('/new', express.json(), checkUserToken(), checkUserRole("admin"), this.createSpace.bind(this))
-        router.patch('/update', express.json(), checkUserToken(), checkUserRole("admin"), this.update.bind(this))
+        router.post('/', express.json(), checkUserToken(), checkUserRole("admin"), this.createSpace.bind(this))
+        router.patch('/', express.json(), checkUserToken(), checkUserRole("admin"), this.update.bind(this))
         router.patch('/new/animal_group', express.json(), checkUserToken(), checkUserRole("admin"), this.addAnimalGroup.bind(this))
         return router
     }

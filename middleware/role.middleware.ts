@@ -13,9 +13,6 @@ export function checkUserRole(name: string ): RequestHandler{
         const hasRole = user.roles
         for (let role of user.roles){
 
-            if(typeof role === 'object' ){
-                console.log(role.name);
-            }
             if(typeof role === 'object' && role.name === name){
                 next()
                 return
