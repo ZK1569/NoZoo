@@ -1,4 +1,6 @@
 import mongoose, { Schema, Model } from "mongoose";
+import { AnimalGroup } from "./animalGroup.model";
+import { MaintenanceBooklet } from "./maintenanceBooklet.model";
 
 const spaceShemma = new Schema<Space>({
     name: {
@@ -28,9 +30,13 @@ const spaceShemma = new Schema<Space>({
     },
     maintenance_booklet: [{
         type: Schema.Types.ObjectId,
+        ref: "MaintenanceBooklet",
+        require: true
     }],
     animal_species: [{
         type: Schema.Types.ObjectId,
+        ref: "AnimalGroup", 
+        require: true
     }]
 
 }, {
@@ -48,8 +54,8 @@ export interface Space{
     open: boolean,
     handicapped_access: boolean,
     maintenance: boolean,
-    maintenance_booklet: Array<Object>,
-    animal_species: Array<Object>
+    maintenance_booklet: Array<MaintenanceBooklet>,
+    animal_species: Array<AnimalGroup>
 
 }
 
