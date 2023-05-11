@@ -13,7 +13,6 @@ const healthBookletShemma = new Schema<HealthBooklet>({
     veto:{
         type: Schema.Types.ObjectId,
         index: true,
-        required: true
     }
 }, {
     versionKey: false,
@@ -23,7 +22,7 @@ const healthBookletShemma = new Schema<HealthBooklet>({
 export interface HealthBooklet{
     action: string,
     date: Date, 
-    veto: Object
+    veto?: Object
 }
 
 export const HealthBookletModel: Model<HealthBooklet> = mongoose.model("HealthBooklet", healthBookletShemma)
