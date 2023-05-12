@@ -29,7 +29,7 @@ export interface Animal{
     name: string,
     sex: boolean,
     date_of_birth: Date,
-    health_booklet: Array<HealthBooklet>
+    health_booklet: HealthBooklet[]
 }
 
 export const AnimalModel: Model<Animal> = mongoose.model("Animal", animalShemma)

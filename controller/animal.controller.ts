@@ -1,5 +1,5 @@
 import { Model } from "mongoose"
-import { Animal, AnimalModel, Role, RoleModel, SessionModel, Space, SpaceModel, User, UserModel } from "../models"
+import { Animal, AnimalModel, HealthBookletModel, Role } from "../models"
 import { Router, Response, Request} from "express"
 import * as express from 'express'
 import { checkBody, checkUserRole, checkUserToken } from "../middleware"
@@ -23,6 +23,27 @@ export class AnimalController {
         "sex" : "boolean",
         "date" : "string"
     }
+
+    readonly paramsAddTreatment = {
+        "animalId" : "string",
+        "action" : "string",
+        "date" : "string"
+    }
+
+    getAnimalById = async (ID: string) => {
+        // Check aniaml ID if its real and return his info 
+        
+        try {
+            const animalInfo = await AnimalModel.findById(ID);
+            if (!animalInfo) {
+                return false;
+            }
+            return animalInfo;
+        } catch (error) {
+            console.error(`Error in getAnimalById: ${error}`);
+            return false;
+        }
+    };
 
     creatAnimal = async (req: Request, res: Response): Promise<void> => {
 
@@ -48,15 +69,35 @@ export class AnimalController {
         
     }
 
-    addTreatment =async (req:Request, res:Response):Promise<void> => {
-        res.status(504).send("The functionality in not yet done, will take a coffee in the meantime.")
+    addTreatment = async (req:Request, res:Response):Promise<void> => {
+        
+        const animalInfo = await this.getAnimalById(req.body.animalId)
+        
+        if(!animalInfo){
+            res.status(404).end()
+            return
+        }
+
+        const health_task = await HealthBookletModel.create({
+            action: req.body.action,
+            date: req.body.date,
+            veto: req.user
+        })
+
+        await AnimalModel.updateOne(
+            { _id: animalInfo._id },  
+            { $push: { health_booklet: health_task } } 
+          );
+
+        res.status(200).end()
+    
     }
 
 
     buildRouter = (): Router => {
         const router = express.Router()
         router.post('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsCreateAnimal), this.creatAnimal.bind(this))
-        router.patch('/treatment', express.json(), checkUserToken(), checkUserRole("veterinarian"), this.addTreatment.bind(this))
+        router.patch('/treatment', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
         return router
     }
 }
