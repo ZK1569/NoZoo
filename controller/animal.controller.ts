@@ -32,7 +32,7 @@ export class AnimalController {
 
     getAnimalById = async (ID: string) => {
         // Check aniaml ID if its real and return his info 
-        
+
         try {
             const animalInfo = await AnimalModel.findById(ID);
             if (!animalInfo) {
@@ -97,7 +97,7 @@ export class AnimalController {
     buildRouter = (): Router => {
         const router = express.Router()
         router.post('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsCreateAnimal), this.creatAnimal.bind(this))
-        router.patch('/treatment', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
+        router.post('/treatment', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
         return router
     }
 }
