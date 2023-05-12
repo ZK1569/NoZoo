@@ -9,12 +9,10 @@ export class AnimalController {
 
     readonly path: string
     readonly model: Model<Animal>
-    guestRole: Role | null
 
     constructor(){
         this.path = "/animal"
         this.model = AnimalModel
-        this.guestRole = null
     }
 
     // The body parameters of the different requests 

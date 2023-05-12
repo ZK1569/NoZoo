@@ -1,18 +1,18 @@
 import mongoose, { Schema, Model } from "mongoose";
-import internal = require("stream");
 import { Animal } from "./animal.model";
 
 const animalGroupShemma = new Schema<AnimalGroup>({
     name: {
         type: Schema.Types.String,
         index: true,
+        unique: true,
         required : true
     },
-    animals:{
+    animals:[{
         type: Schema.Types.ObjectId,
         ref: "Animal", 
         require: true
-    },
+    }],
     max:{
         type: Schema.Types.Number,
         required: true
@@ -24,7 +24,7 @@ const animalGroupShemma = new Schema<AnimalGroup>({
 
 export interface AnimalGroup{
     name: string,
-    animals: Animal,
+    animals: Animal[],
     max: number
 }
 
