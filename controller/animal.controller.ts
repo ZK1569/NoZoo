@@ -30,11 +30,18 @@ export class AnimalController {
         "date" : "string"
     }
 
-    getAnimalById = async (ID: string) => {
+    readonly paramsGetAnimal = {
+        "animalId" : "string"
+    }
+
+    private getAnimalById = async (ID: string) => {
         // Check aniaml ID if its real and return his info 
 
         try {
-            const animalInfo = await AnimalModel.findById(ID);
+            const animalInfo = await AnimalModel.findById(ID).populate({
+                path: "health_booklet"
+            }).exec();
+            
             if (!animalInfo) {
                 return false;
             }
@@ -93,9 +100,22 @@ export class AnimalController {
     
     }
 
+    getAnimal = async (req:Request, res: Response): Promise<void> => {
+
+        const animal = await this.getAnimalById(req.body.animalId)
+
+        if(!animal){
+            res.status(404).end()
+            return
+        }
+
+        res.send(animal)
+    }
+
 
     buildRouter = (): Router => {
         const router = express.Router()
+        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetAnimal), this.getAnimal.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsCreateAnimal), this.creatAnimal.bind(this))
         router.post('/treatment', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
         return router
