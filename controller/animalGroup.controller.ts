@@ -25,6 +25,10 @@ export class AnimalGroupController{
         "animalGroupId" : "string"
     }
 
+    readonly paramsGetGroup = {
+        "animalGroupId" : "string"
+    }
+
     createGroup = async (req: Request, res:Response): Promise<void> => {
 
         try{
@@ -80,9 +84,33 @@ export class AnimalGroupController{
             }
     }
 
+    getGroup = async (req:Request, res: Response): Promise<void> => {
+
+        try{
+            const animalGroup = await AnimalGroupModel.findById(req.body.animalGroupId).populate({
+                path: "animals",
+                populate: {
+                    path: "health_booklet"
+                }
+            }).exec()
+            
+            if(!animalGroup){
+                res.status(404).end()
+                return
+            }
+            res.send(animalGroup)
+        }catch (error) {
+            console.error(`Error in getAnimalById: ${error}`);
+            res.status(400).end()
+        }
+
+
+    }
+
 
     buildRouter = (): Router => {
         const router = express.Router()
+        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetGroup), this.getGroup.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsCreateGroup), this.createGroup.bind(this))
         router.patch('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddAnimalInGroup), this.addAnimalInGroup.bind(this))
         return router
