@@ -54,8 +54,8 @@ export interface Space{
     open: boolean,
     handicapped_access: boolean,
     maintenance: boolean,
-    maintenance_booklet: Array<MaintenanceBooklet>,
-    animal_species: Array<AnimalGroup>
+    maintenance_booklet: MaintenanceBooklet[],
+    animal_species: AnimalGroup[]
 
 }
 
