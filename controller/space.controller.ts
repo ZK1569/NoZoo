@@ -24,7 +24,7 @@ export class SpacesController {
         "handicapped_access": "boolean"
     }
 
-    readonly paramsGetEspaceInfo = {
+    readonly paramsGetSpaceInfo = {
         "spaceId": "string"
     }
 
@@ -53,12 +53,29 @@ export class SpacesController {
     }
 
     getSpace = async (req: Request, res: Response): Promise<void> => {
-        res.status(504).send("The functionality in not yet done, will take a coffee in the meantime.")
+
+        try{
+            const space = await SpaceModel.findById(req.body.spaceId).populate({
+                path: "maintenance_booklet",
+            }).exec()
+            
+            if(!space){
+                res.status(404).end()
+                return
+            }
+            res.send(space)
+
+        }catch (error) {
+            console.error(`Error in getSpace: ${error}`);
+            res.status(404).end()
+            return 
+        }
+        
     }
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetEspaceInfo), this.getSpace.bind(this))
+        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetSpaceInfo), this.getSpace.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsCreateSpace), this.createSpace.bind(this))
         router.patch('/', express.json(), checkUserToken(), checkUserRole("admin"), this.update.bind(this))
         router.patch('/new/animal_group', express.json(), checkUserToken(), checkUserRole("admin"), this.addAnimalGroup.bind(this))
