@@ -110,7 +110,31 @@ export class UserController {
     }
 
     addRole = async (req:Request, res:Response): Promise<void> => {
-        res.status(504).send("The functionality in not yet done, will take a coffee in the meantime.")
+
+        if(!req.user){res.send(401).end(); return}
+
+        const newRoles = ["admin", "guest"]
+
+        // Check that we don't assign roles to ourselves 
+        if ("6456ba2ab3a5d54d5297eff6" === req.user._id){
+            res.status(409).end()
+            return
+        }
+
+        // TODO: Verify that the user does not already have the role
+        
+        for (let role of newRoles){
+            const ModelOfRole = await RoleModel.findOne({ name: role }).exec();
+            
+            // Insertion
+            await UserModel.updateOne(
+                { _id: "6456ba2ab3a5d54d5297eff6" },  
+                { $push: { roles: ModelOfRole } } 
+            );
+      
+        }
+        res.status(200).end()
+        return 
     }
 
     getRoles = async (req: Request, res: Response): Promise<void> => {
