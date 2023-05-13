@@ -17,11 +17,15 @@ export class SpacesController {
         this.guestRole = null
     }
 
-    paramsCreateSpace = {
+    readonly paramsCreateSpace = {
         "name": "string",
         "description": "string",
         "capacity" : "number",
         "handicapped_access": "boolean"
+    }
+
+    readonly paramsGetEspaceInfo = {
+        "spaceId": "string"
     }
 
     createSpace = async (req: Request, res: Response): Promise<void> => {
@@ -48,8 +52,13 @@ export class SpacesController {
         res.status(504).send("The functionality in not yet done, will take a coffee in the meantime.")
     }
 
+    getSpace = async (req: Request, res: Response): Promise<void> => {
+        res.status(504).send("The functionality in not yet done, will take a coffee in the meantime.")
+    }
+
     buildRouter = (): Router => {
         const router = express.Router()
+        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetEspaceInfo), this.getSpace.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsCreateSpace), this.createSpace.bind(this))
         router.patch('/', express.json(), checkUserToken(), checkUserRole("admin"), this.update.bind(this))
         router.patch('/new/animal_group', express.json(), checkUserToken(), checkUserRole("admin"), this.addAnimalGroup.bind(this))
