@@ -33,6 +33,11 @@ export class SpacesController {
         "spaceId" : "string"
     }
 
+    readonly paramsMaintenance = {
+        "spaceId": "string",
+        "state" : "boolean"
+    }
+
     createSpace = async (req: Request, res: Response): Promise<void> => {
 
         const space = await SpaceModel.create({
@@ -71,7 +76,7 @@ export class SpacesController {
             await SpaceModel.updateOne(
                 { _id: space._id },  
                 { $push: { animal_species: animalGroup } } 
-            );
+            )
             res.status(200).end()
             return 
         } else {
@@ -107,11 +112,22 @@ export class SpacesController {
         
     }
 
+    switchMaintenance = async (req:Request, res:Response): Promise<void> => {
+
+        await SpaceModel.updateOne(
+            { _id: req.body.spaceId },  
+            { $set: { maintenance: req.body.state } } 
+        );
+
+        res.status(200).end()
+        return      
+    }
+
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetSpaceInfo), this.getSpace.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsCreateSpace), this.createSpace.bind(this))
-        router.patch('/', express.json(), checkUserToken(), checkUserRole("admin"), this.update.bind(this))
+        router.patch('/maintenance', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsMaintenance), this.switchMaintenance.bind(this))
         router.patch('/new/animal_group', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsAddAnimalGroup), this.addAnimalGroup.bind(this))
         return router
     }
