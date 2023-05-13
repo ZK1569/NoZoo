@@ -85,6 +85,11 @@ export class SpacesController {
 
         try{
             const space = await SpaceModel.findById(req.body.spaceId).populate({
+                path: "animal_species",
+                populate: {
+                    path: "animals"
+                }
+            }).populate({
                 path: "maintenance_booklet",
             }).exec()
             
