@@ -3,7 +3,7 @@ import { Role, RoleModel, SessionModel, User, UserModel } from "../models"
 import { Router, Response, Request} from "express"
 import * as express from 'express'
 import { SecurityUtils } from "../utils"
-import { checkUserToken } from "../middleware"
+import { checkUserRole, checkUserToken } from "../middleware"
 
 
 export class UserController {
@@ -109,12 +109,25 @@ export class UserController {
         res.json(req.user)
     }
 
+    addRole = async (req:Request, res:Response): Promise<void> => {
+        res.status(504).send("The functionality in not yet done, will take a coffee in the meantime.")
+    }
+
+    getRoles = async (req: Request, res: Response): Promise<void> => {
+
+        const roles = await RoleModel.find()
+
+        res.send(roles)
+    }
+
     buildRouter = (): Router => {
         const router = express.Router()
         router.post(`/subscribe`, express.json(), this.subscribe.bind(this))
         router.post('/login', express.json(), this.login.bind(this))
+        router.patch('/role', express.json(), checkUserToken(), checkUserRole('admin'), this.addRole.bind(this))
         router.delete('/logout', checkUserToken(), this.logout.bind(this))
         router.get('/me', checkUserToken(), this.me.bind(this))
+        router.get('/role', checkUserToken(), checkUserRole('admin'), this.getRoles.bind(this)) // Return the list of all possible roles 
 
         return router
     }
