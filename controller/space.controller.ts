@@ -133,12 +133,23 @@ export class SpacesController {
         return    
     }
 
+    switchHandicap = async (req:Request, res:Response): Promise<void> => {
+        await SpaceModel.updateOne(
+            { _id: req.body.spaceId },  
+            { $set: { handicapped_access: req.body.state } } 
+        );
+
+        res.status(200).end()
+        return   
+    }
+
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetSpaceInfo), this.getSpace.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsCreateSpace), this.createSpace.bind(this))
         router.patch('/maintenance', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsMaintenance), this.switchMaintenance.bind(this))
         router.patch('/open', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsMaintenance), this.switchOpen.bind(this))
+        router.patch('/handicap', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsMaintenance), this.switchHandicap.bind(this))
         router.patch('/new/animal_group', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsAddAnimalGroup), this.addAnimalGroup.bind(this))
         return router
     }
