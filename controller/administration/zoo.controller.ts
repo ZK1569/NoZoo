@@ -50,10 +50,22 @@ export class ZooController {
         return 
     }
 
+    getZoo = async (req:Request, res:Response): Promise<void> => {
+
+        const zoo = await ZooModel.findOne({
+            name: "NoZoo"
+        }).populate({
+            path: "spaces"
+        }).exec()
+
+        res.status(200).json(zoo)
+    }
+
 
 
     buildRouter = (): Router => {
         const router = express.Router()
+        router.get('/', checkUserToken(), checkUserRole('admin'), this.getZoo.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
         return router
     }
