@@ -11,6 +11,7 @@ Description of the project.
   - [Installation](#installation)
   - [Usage](#usage)
   - [API Documentation](#api-documentation)
+  - [Author](#author)
   - [License](#license)
 
 ## Features
@@ -52,6 +53,10 @@ After starting the server, you can access the API using a tool like Postman or a
 ## API Documentation
 
 The API documentation can be found in the [API.md](API.md) file. It provides details on the API endpoints, parameters, and responses.
+
+## Author
+
+Cristian URSU - GitHub [ZK1569](https://github.com/ZK1569)
 
 ## License
 
