@@ -10,7 +10,6 @@ export function checkUserRole(name: string ): RequestHandler{
 
         const user = req.user
 
-        const hasRole = user.roles
         for (let role of user.roles){
 
             if(typeof role === 'object' && role.name === name){

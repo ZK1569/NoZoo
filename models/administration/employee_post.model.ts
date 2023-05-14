@@ -29,6 +29,7 @@ const employee_postShemma = new Schema<Employee_post>({
 })
 
 export interface Employee_post{
+    _id: string,
     receptionist: User[],
     veterinarian: User[],
     maintenance_agent: User[],
