@@ -6,10 +6,10 @@ import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
 import { UserController } from "./controller/user.controller";
 import { RoleModel } from "./models";
+import { SpacesController } from "./controller/space/space.controller"
+import { AnimalController } from "./controller/space/animal.controller";
+import { AnimalGroupController } from "./controller/space/animalGroup.controller";
 import morgan = require("morgan");
-import { SpacesController } from "./controller/space.controller";
-import { AnimalController } from "./controller/animal.controller";
-import { AnimalGroupController } from "./controller/animalGroup.controller";
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {

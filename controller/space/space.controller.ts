@@ -1,8 +1,8 @@
 import { Model } from "mongoose"
-import { AnimalGroupModel, MaintenanceBookletModel, Role, RoleModel, SessionModel, Space, SpaceModel, User, UserModel } from "../models"
+import { AnimalGroupModel, MaintenanceBookletModel, Role, RoleModel, SessionModel, Space, SpaceModel, User, UserModel } from "../../models"
 import { Router, Response, Request} from "express"
 import * as express from 'express'
-import { checkBody, checkUserRole, checkUserToken } from "../middleware"
+import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
 
 
 export class SpacesController {

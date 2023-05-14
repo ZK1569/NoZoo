@@ -1,8 +1,8 @@
 import { Model } from "mongoose"
-import { AnimalGroup, AnimalGroupModel, AnimalModel } from "../models"
+import { AnimalGroup, AnimalGroupModel, AnimalModel } from "../../models"
 import { Router, Request, Response } from "express"
 import * as express from 'express'
-import { checkBody, checkUserRole, checkUserToken } from "../middleware"
+import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
 
 
 export class AnimalGroupController{

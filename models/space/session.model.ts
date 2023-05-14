@@ -1,5 +1,5 @@
 import mongoose, { Schema, Model } from "mongoose";
-import { User } from "./user.model";
+import { User } from "../user.model";
 
 const sessionShemma = new Schema<Session>({
     user: {
