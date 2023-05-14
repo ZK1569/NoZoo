@@ -55,7 +55,6 @@ export class ZooController {
     buildRouter = (): Router => {
         const router = express.Router()
         router.post('/', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
-
         return router
     }
 

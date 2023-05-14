@@ -3,18 +3,19 @@ import { AnimalGroupModel, MaintenanceBookletModel, Role, RoleModel, SessionMode
 import { Router, Response, Request} from "express"
 import * as express from 'express'
 import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
+import { Zoo, ZooModel } from "../../models/zoo.model"
 
 
 export class SpacesController {
 
     readonly path: string
     readonly model: Model<Space>
-    guestRole: Role | null
+    zoo: Zoo | null
 
     constructor(){
         this.path = "/space"
         this.model = SpaceModel
-        this.guestRole = null
+        this.zoo = null
     }
 
     readonly paramsCreateSpace = {
@@ -43,8 +44,18 @@ export class SpacesController {
         "action" : "string"
     }
 
+    private loadZoo = async ():Promise<void> => {
+        if (this.zoo){
+            return
+        }
+        this.zoo = await ZooModel.findOne({
+            name: "NoZoo"
+        }).exec()
+    }
+
     createSpace = async (req: Request, res: Response): Promise<void> => {
 
+        
         const space = await SpaceModel.create({
             name: req.body.name,
             description: req.body.description,
@@ -56,11 +67,18 @@ export class SpacesController {
             animal_species: []  
         })
 
-        res.json(space)
-    }
+        await this.loadZoo()
+        if(!this.zoo){
+            res.status(500).json({"message": "This mistake will never happen"})
+            return
+        }
+        
+        await ZooModel.updateOne(
+            { _id: this.zoo._id },  
+            { $push: { spaces: space } } 
+        )
 
-    update = async (req: Request, res: Response): Promise<void> => {
-        res.status(504).send("The functionality in not yet done, will take a coffee in the meantime.")
+        res.json(space)
     }
 
     addAnimalGroup = async (req: Request, res: Response): Promise<void> => {

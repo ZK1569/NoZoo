@@ -29,6 +29,7 @@ const zooShemma = new Schema<Zoo>({
 })
 
 export interface Zoo{
+    _id: string,
     name: string,
     spaces: Space[],
     is_open: boolean,
