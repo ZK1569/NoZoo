@@ -55,7 +55,10 @@ export class ZooController {
         const zoo = await ZooModel.findOne({
             name: "NoZoo"
         }).populate({
-            path: "spaces"
+            path: "spaces",
+            populate: ({
+                path: "maintenance_booklet"
+            })
         }).exec()
 
         res.status(200).json(zoo)
