@@ -81,7 +81,6 @@ export class ZooController {
         "empId": "string"
     }
     employeeIn = async (req:Request, res: Response): Promise<void> => {
-
         
         const userId = req.body.empId
         const user = await UserModel.findById(userId).populate({path: "roles"}).exec()
@@ -164,6 +163,53 @@ export class ZooController {
 
     }
 
+    readonly paramsEmployeeOut = {
+        "empId": "string"
+    }
+    employeeOut = async (req:Request, res: Response): Promise<void> => {
+
+        const userId = req.body.empId
+        const user = await UserModel.findById(userId).populate({path: "roles"}).exec()
+        if(!user){res.status(404).json({"message" : "User not found"}); return}
+        
+        await this.loadZoo()
+        if(!this.zoo){res.status(500).end(); return}
+
+        const userRoles = user.roles
+        
+        for (let role of userRoles){
+            if(typeof role !== 'object'){continue}
+
+            switch(role.name){
+                case "veterinarian":
+
+                    const indexToDelete = this.zoo.employee_post.veterinarian.indexOf(userId)
+                        
+                    if (indexToDelete < 0){
+                        res.status(409).json({"message": "The employee is not at his workstation "})
+                        return 
+                    }
+
+                    const rep = await Employee_postModel.findOneAndUpdate(
+                        { _id: this.zoo.employee_post._id },  
+                        { $pull: { veterinarian: { _id: user._id } } }
+                    ).exec()
+                    
+                    console.log(rep);
+                    
+
+                    res.status(200).end()
+                    return 
+
+                default:
+                    continue
+            }
+        }
+        res.status(501).send("Not implemented")
+
+
+    }
+
 
 
 
@@ -172,6 +218,7 @@ export class ZooController {
         router.get('/', checkUserToken(), checkUserRole('admin'), this.getZoo.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
         router.patch('/employee/in', express.json(), checkBody(this.paramsEmployeeIn), this.employeeIn.bind(this))
+        router.patch('/employee/out', express.json(), checkBody(this.paramsEmployeeOut), this.employeeOut.bind(this))
         return router
     }
 
