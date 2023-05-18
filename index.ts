@@ -6,10 +6,11 @@ import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
 import { UserController } from "./controller/user.controller";
 import { RoleModel } from "./models";
+import { SpacesController } from "./controller/space/space.controller"
+import { AnimalController } from "./controller/space/animal.controller";
+import { AnimalGroupController } from "./controller/space/animalGroup.controller";
 import morgan = require("morgan");
-import { SpacesController } from "./controller/space.controller";
-import { AnimalController } from "./controller/animal.controller";
-import { AnimalGroupController } from "./controller/animalGroup.controller";
+import { ZooController } from "./controller/administration/zoo.controller";
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -33,11 +34,13 @@ const startServer = async (): Promise<void> => {
     const spaceController = new SpacesController()
     const animalController = new AnimalController()
     const animalGroupController = new AnimalGroupController()
+    const zooController = new ZooController()
 
     app.use(userController.path, userController.buildRouter())
     app.use(spaceController.path, spaceController.buildRouter())
     app.use(animalController.path, animalController.buildRouter())
     app.use(animalGroupController.path, animalGroupController.buildRouter())
+    app.use(zooController.path, zooController.buildRouter())
     
     app.listen(process.env.PORT, () => {
         console.log(`Server up on PORT : ${process.env.PORT}`)
