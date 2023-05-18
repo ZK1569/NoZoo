@@ -1,9 +1,11 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { Space } from "../space/space.model";
+import { TypeTicket } from "./typeTicket.model";
 
 const ticketShemma = new Schema<Ticket>({
     type_ticket: {
         type: Schema.Types.ObjectId,
+        ref: "TypeTicket",
         required : true
     },
     accessible_spaces:[{
@@ -26,7 +28,7 @@ const ticketShemma = new Schema<Ticket>({
 
 export interface Ticket{
     _id: string,
-    type_ticket: Object,
+    type_ticket: TypeTicket,
     accessible_spaces: Space[],
     is_in_use: boolean,
     creation_date: Date
