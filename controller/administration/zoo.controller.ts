@@ -190,19 +190,72 @@ export class ZooController {
                         return 
                     }
 
-                    const rep = await Employee_postModel.findOneAndUpdate(
+                    await Employee_postModel.findOneAndUpdate(
                         { _id: this.zoo.employee_post._id },  
-                        { $pull: { veterinarian: { _id: user._id } } }
+                        { $pull: { veterinarian: { $in : user._id } } }
                     ).exec()
                     
-                    console.log(rep);
-                    
 
+                    res.status(200).end()
+                    return 
+                
+                case "receptionist":
+
+                    const indexToDeleteRece = this.zoo.employee_post.receptionist.indexOf(userId)
+                        
+                    if (indexToDeleteRece < 0){
+                        res.status(409).json({"message": "The employee is not at his workstation "})
+                        return 
+                    }
+
+                    await Employee_postModel.findOneAndUpdate(
+                        { _id: this.zoo.employee_post._id },  
+                        { $pull: { receptionist: { $in : user._id } } }
+                    ).exec()
+                
+                
+                    res.status(200).end()
+                    return 
+
+                case "maintenance agent":
+
+                    const indexToDeleteAg = this.zoo.employee_post.maintenance_agent.indexOf(userId)
+                        
+                    if (indexToDeleteAg < 0){
+                        res.status(409).json({"message": "The employee is not at his workstation "})
+                        return 
+                    }
+
+                    await Employee_postModel.findOneAndUpdate(
+                        { _id: this.zoo.employee_post._id },  
+                        { $pull: { maintenance_agent: { $in : user._id } } }
+                    ).exec()
+                
+                
+                    res.status(200).end()
+                    return 
+
+                case "salesman":
+
+                    const indexToDeleteSel = this.zoo.employee_post.salesman.indexOf(userId)
+                        
+                    if (indexToDeleteSel < 0){
+                        res.status(409).json({"message": "The employee is not at his workstation "})
+                        return 
+                    }
+
+                    await Employee_postModel.findOneAndUpdate(
+                        { _id: this.zoo.employee_post._id },  
+                        { $pull: { salesman: { $in : user._id } } }
+                    ).exec()
+                
+                
                     res.status(200).end()
                     return 
 
                 default:
                     continue
+                
             }
         }
         res.status(501).send("Not implemented")
