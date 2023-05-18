@@ -264,6 +264,47 @@ export class ZooController {
     }
 
 
+    readonly paramsOpenZoo = {
+        "status": "boolean"
+    }
+
+    openZoo = async (req:Request, res:Response): Promise<void> => {
+
+        await this.loadZoo()
+
+        if (!this.zoo){res.status(500).end(); return }
+
+        
+        if (req.body.status == true){
+            const nbrVeterinarian = await this.zoo.employee_post.veterinarian.length
+            const nbrReceptionist = await this.zoo.employee_post.receptionist.length
+            const nbrMaintenance  = await this.zoo.employee_post.maintenance_agent.length
+            const nbrSalesman     = await this.zoo.employee_post.salesman.length
+
+            if (nbrVeterinarian > 0 && nbrReceptionist > 0 && nbrMaintenance > 0 && nbrSalesman > 0){
+                await ZooModel.updateOne(
+                    { _id: this.zoo._id },  
+                    { $set: { is_open: true } } 
+                );
+        
+                res.status(200).end()
+                return 
+            }else{
+                res.status(400).json({"message": "The conditions for opening the zoo are not respected"})
+            }
+
+        }
+        
+
+        await ZooModel.updateOne(
+            { _id: this.zoo._id },  
+            { $set: { is_open: req.body.status } } 
+        );
+
+        res.status(200).end()
+        return      
+    }
+
 
 
     buildRouter = (): Router => {
@@ -272,6 +313,7 @@ export class ZooController {
         router.post('/', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
         router.patch('/employee/in', express.json(), checkBody(this.paramsEmployeeIn), this.employeeIn.bind(this))
         router.patch('/employee/out', express.json(), checkBody(this.paramsEmployeeOut), this.employeeOut.bind(this))
+        router.patch("/open", express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsOpenZoo), this.openZoo.bind(this))
         return router
     }
 
