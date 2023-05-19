@@ -5,7 +5,7 @@ import * as express from 'express'
 import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
 import { UserController } from "./controller/user.controller";
-import { RoleModel } from "./models";
+import { RoleModel, TicketModel } from "./models";
 import { SpacesController } from "./controller/space/space.controller"
 import { AnimalController } from "./controller/space/animal.controller";
 import { AnimalGroupController } from "./controller/space/animalGroup.controller";
@@ -20,7 +20,8 @@ const startServer = async (): Promise<void> => {
         authSource: "admin"
     })
 
-    await upsertRoles()
+    await userRoles()
+    await typeTickets()
     
     const app = express()
 
@@ -48,7 +49,7 @@ const startServer = async (): Promise<void> => {
        
 }
 
-const upsertRoles = async () => {
+const userRoles = async () => {
     const countRoles = await RoleModel.count().exec()
     if(countRoles !== 0 ){
         return 
@@ -58,6 +59,21 @@ const upsertRoles = async () => {
     const rolesRequest = rolesNames.map((name) => {
         RoleModel.create({
             name
+        })
+    })
+    await Promise.all(rolesRequest)
+}
+
+const typeTickets = async () => {
+    const countTicket = await TicketModel.count().exec()
+    if(countTicket !== 0 ){
+        return 
+    }
+
+    const ticketNames: string[] = ["day", "week-end", "1dayMonth", "EscapeGame", "Night"]
+    const rolesRequest = ticketNames.map((type) => {
+        RoleModel.create({
+            name: type
         })
     })
     await Promise.all(rolesRequest)
