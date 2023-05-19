@@ -5,12 +5,14 @@ import * as express from 'express'
 import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
 import { UserController } from "./controller/user.controller";
-import { RoleModel, TicketModel } from "./models";
+import { RoleModel, TicketModel, TypeTicketModel } from "./models";
 import { SpacesController } from "./controller/space/space.controller"
 import { AnimalController } from "./controller/space/animal.controller";
 import { AnimalGroupController } from "./controller/space/animalGroup.controller";
 import morgan = require("morgan");
 import { ZooController } from "./controller/administration/zoo.controller";
+import { ZooModel } from "./models/zoo.model";
+import { Employee_postModel } from "./models/administration/employee_post.model";
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -22,6 +24,7 @@ const startServer = async (): Promise<void> => {
 
     await userRoles()
     await typeTickets()
+    await zooCreation()
     
     const app = express()
 
@@ -65,18 +68,41 @@ const userRoles = async () => {
 }
 
 const typeTickets = async () => {
-    const countTicket = await TicketModel.count().exec()
+    const countTicket = await TypeTicketModel.count().exec()
     if(countTicket !== 0 ){
         return 
     }
 
-    const ticketNames: string[] = ["day", "week-end", "1dayMonth", "EscapeGame", "Night"]
-    const rolesRequest = ticketNames.map((type) => {
-        RoleModel.create({
+
+    const ticketNames: string[] = ["day", "weekEnd", "oneDayMonth", "escapeGame", "night"]
+    const tocketRequest = ticketNames.map((type) => {
+        TypeTicketModel.create({
             name: type
         })
     })
-    await Promise.all(rolesRequest)
+    await Promise.all(tocketRequest)
+}
+
+const zooCreation = async () => {
+    const doesZooExist = await ZooModel.count().exec()
+    if(doesZooExist !== 0 ){
+        return 
+    }
+
+    const employee_post = await Employee_postModel.create({
+        receptionist: [],
+        veterinarian: [],
+        maintenance_agent: [],
+        salesman: [] 
+    })
+
+    const zoo = await ZooModel.create({
+        name: "NoZoo",
+        spaces: [],
+        is_open: false,
+        employee_post
+    })
+
 }
 
 startServer().catch((err) => {
