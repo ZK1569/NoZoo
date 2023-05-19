@@ -13,6 +13,7 @@ import morgan = require("morgan");
 import { ZooController } from "./controller/administration/zoo.controller";
 import { ZooModel } from "./models/zoo.model";
 import { Employee_postModel } from "./models/administration/employee_post.model";
+import { TicketController } from "./controller/ticket/ticket.controller";
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -39,12 +40,14 @@ const startServer = async (): Promise<void> => {
     const animalController = new AnimalController()
     const animalGroupController = new AnimalGroupController()
     const zooController = new ZooController()
+    const ticketController = new TicketController()
 
     app.use(userController.path, userController.buildRouter())
     app.use(spaceController.path, spaceController.buildRouter())
     app.use(animalController.path, animalController.buildRouter())
     app.use(animalGroupController.path, animalGroupController.buildRouter())
     app.use(zooController.path, zooController.buildRouter())
+    app.use(ticketController.path, ticketController.buildRouter())
     
     app.listen(process.env.PORT, () => {
         console.log(`Server up on PORT : ${process.env.PORT}`)
