@@ -1,5 +1,5 @@
 import { Document, Model } from "mongoose"
-import { Ticket, TypeTicketModel } from "../../models"
+import { SpaceModel, Ticket, TypeTicketModel } from "../../models"
 
 export class TicketService {
     
@@ -46,5 +46,22 @@ export class TicketService {
                  
         }
 
+    }
+
+    static canAccessSpace = async (ticket: Document<unknown, {}, Ticket> & Omit<Ticket & Required<{_id: string;}>, never>, space_id: string): Promise<boolean> => {
+
+        for (let space of ticket.accessible_spaces){
+            if (space._id == space_id){
+                const spaceInfo = await SpaceModel.findById(space_id).exec()
+
+                if (!spaceInfo || !spaceInfo.open || spaceInfo.maintenance){
+                    return false
+                }
+
+                return true 
+            }
+        }
+
+        return false
     }
 }
