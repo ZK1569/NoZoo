@@ -7,8 +7,9 @@ export class TicketService {
         
         const currentDate = new Date()
         const typeTicket = await TypeTicketModel.findById(ticket.type_ticket)
+        if(!typeTicket){return false}
 
-        switch(typeTicket?.name){
+        switch(typeTicket.name){
             case "weekEnd":
                 // If the ticket is scanned during the weekend
                 if (!(6 <= currentDate.getDay() && currentDate.getDay() <= 7)){
@@ -28,7 +29,15 @@ export class TicketService {
                 return false
             
             case "oneDayMonth":
-                console.log("C'est que un jour par mois, a ne pas supprimer");
+
+                if(!ticket.last_activation_date || ticket.last_activation_date.getMonth() != currentDate.getMonth()){
+                    if(8 < currentDate.getHours() && currentDate.getHours() < 20){
+                        ticket.last_activation_date = currentDate
+                        // ticket.save()
+                        return true
+                    }
+                }
+                
                 return false
                 
             case "night":

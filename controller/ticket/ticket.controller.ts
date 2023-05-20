@@ -114,8 +114,8 @@ export class TicketController {
         const router = express.Router()
         router.get('/', express.json(),checkUserToken(), checkBody(this.paramsGetTicket), this.getTicket.bind(this))
         router.post("/", express.json(), checkUserToken(), checkUserRole("guest"), checkBody(this.paramsCreateTicket), this.createTicket.bind(this))
-        router.patch('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess),checkTicket(true, false), this.checkTicketZooAccess.bind(this))
-        router.patch('/space', express.json(), checkBody(this.paramsCheckTicketSpaceAccess), checkTicket(true, true), this.checkTicketSpaceAccess.bind(this))
+        router.patch('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess),checkTicket(), this.checkTicketZooAccess.bind(this))
+        router.patch('/space', express.json(), checkBody(this.paramsCheckTicketSpaceAccess), checkTicket(), this.checkTicketSpaceAccess.bind(this))
         return router
     }
 
