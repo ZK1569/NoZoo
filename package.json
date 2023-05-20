@@ -1,12 +1,13 @@
 {
   "name": "nozoo",
   "version": "1.0.0",
-  "description": "",
+  "description": "Description of the project.",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "npm run build && npm start"
+    "dev": "npm run build && npm start",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -19,10 +20,23 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.1",
     "@types/morgan": "^1.9.4",
     "@types/node": "^18.15.11",
+    "jest": "^29.5.0",
+    "jest-express": "^1.12.0",
     "nodemon": "^2.0.22",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZK1569/NoZoo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ZK1569/NoZoo/issues"
+  },
+  "homepage": "https://github.com/ZK1569/NoZoo#readme"
 }
