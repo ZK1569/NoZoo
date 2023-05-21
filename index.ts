@@ -5,12 +5,15 @@ import * as express from 'express'
 import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
 import { UserController } from "./controller/user.controller";
-import { RoleModel } from "./models";
+import { RoleModel, TicketModel, TypeTicketModel } from "./models";
 import { SpacesController } from "./controller/space/space.controller"
 import { AnimalController } from "./controller/space/animal.controller";
 import { AnimalGroupController } from "./controller/space/animalGroup.controller";
 import morgan = require("morgan");
 import { ZooController } from "./controller/administration/zoo.controller";
+import { ZooModel } from "./models/zoo.model";
+import { Employee_postModel } from "./models/administration/employee_post.model";
+import { TicketController } from "./controller/ticket/ticket.controller";
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -20,7 +23,9 @@ const startServer = async (): Promise<void> => {
         authSource: "admin"
     })
 
-    await upsertRoles()
+    await userRoles()
+    await typeTickets()
+    await zooCreation()
     
     const app = express()
 
@@ -35,12 +40,14 @@ const startServer = async (): Promise<void> => {
     const animalController = new AnimalController()
     const animalGroupController = new AnimalGroupController()
     const zooController = new ZooController()
+    const ticketController = new TicketController()
 
     app.use(userController.path, userController.buildRouter())
     app.use(spaceController.path, spaceController.buildRouter())
     app.use(animalController.path, animalController.buildRouter())
     app.use(animalGroupController.path, animalGroupController.buildRouter())
     app.use(zooController.path, zooController.buildRouter())
+    app.use(ticketController.path, ticketController.buildRouter())
     
     app.listen(process.env.PORT, () => {
         console.log(`Server up on PORT : ${process.env.PORT}`)
@@ -48,7 +55,7 @@ const startServer = async (): Promise<void> => {
        
 }
 
-const upsertRoles = async () => {
+const userRoles = async () => {
     const countRoles = await RoleModel.count().exec()
     if(countRoles !== 0 ){
         return 
@@ -61,6 +68,44 @@ const upsertRoles = async () => {
         })
     })
     await Promise.all(rolesRequest)
+}
+
+const typeTickets = async () => {
+    const countTicket = await TypeTicketModel.count().exec()
+    if(countTicket !== 0 ){
+        return 
+    }
+
+
+    const ticketNames: string[] = ["day", "weekEnd", "oneDayMonth", "escapeGame", "night"]
+    const tocketRequest = ticketNames.map((type) => {
+        TypeTicketModel.create({
+            name: type
+        })
+    })
+    await Promise.all(tocketRequest)
+}
+
+const zooCreation = async () => {
+    const doesZooExist = await ZooModel.count().exec()
+    if(doesZooExist !== 0 ){
+        return 
+    }
+
+    const employee_post = await Employee_postModel.create({
+        receptionist: [],
+        veterinarian: [],
+        maintenance_agent: [],
+        salesman: [] 
+    })
+
+    const zoo = await ZooModel.create({
+        name: "NoZoo",
+        spaces: [],
+        is_open: false,
+        employee_post
+    })
+
 }
 
 startServer().catch((err) => {

@@ -41,35 +41,6 @@ export class ZooController {
         }).exec()
     }
 
-
-    newZoo = async (req:Request, res:Response): Promise<void> => {
-
-        // Check if there is a zoo in the database
-        const nbrZoo = await ZooModel.countDocuments()
-
-        if (nbrZoo > 0){
-            res.status(409).json({message: "The zoo has already been created"})
-            return
-        }
-
-        const employee_post = await Employee_postModel.create({
-            receptionist: [],
-            veterinarian: [],
-            maintenance_agent: [],
-            salesman: [] 
-        })
-
-        const zoo = await ZooModel.create({
-            name: req.body.name,
-            spaces: [],
-            is_open: false,
-            employee_post
-        })
-
-        res.json(zoo)
-        return 
-    }
-
     getZoo = async (req:Request, res:Response): Promise<void> => {
         await this.loadZoo()
         
@@ -310,7 +281,7 @@ export class ZooController {
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', checkUserToken(), checkUserRole('admin'), this.getZoo.bind(this))
-        router.post('/', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
+        // router.post('/', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
         router.patch('/employee/in', express.json(), checkBody(this.paramsEmployeeIn), this.employeeIn.bind(this))
         router.patch('/employee/out', express.json(), checkBody(this.paramsEmployeeOut), this.employeeOut.bind(this))
         router.patch("/open", express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsOpenZoo), this.openZoo.bind(this))
