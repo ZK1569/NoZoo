@@ -109,6 +109,28 @@ export class TicketController {
         return 
     }
 
+    ticketOutZoo = async (req:Request, res: Response): Promise<void> => {
+
+        const ticket = await TicketModel.findById(req.body.ticket_id)
+
+        if (!ticket){res.status(404).json({"message" : "Your ticket is not valid "}); return }
+
+        if (!ticket.is_in_use){
+            res.status(400).json({"message": "Your pass is not activated"})
+            return 
+        }
+
+        const canGo = await TicketService.canExitZoo(ticket)
+
+        if (!canGo){
+            res.status(403).json({"message": "You cannot exit the zoo"})
+            return 
+        }
+
+        res.status(200).json({"message": "GoodBye"})
+
+    }
+
 
     buildRouter = (): Router => {
         const router = express.Router()
@@ -116,6 +138,7 @@ export class TicketController {
         router.post("/", express.json(), checkUserToken(), checkUserRole("guest"), checkBody(this.paramsCreateTicket), this.createTicket.bind(this))
         router.patch('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess),checkTicket(), this.checkTicketZooAccess.bind(this))
         router.patch('/space', express.json(), checkBody(this.paramsCheckTicketSpaceAccess), checkTicket(), this.checkTicketSpaceAccess.bind(this))
+        router.delete('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess), checkTicket(), this.ticketOutZoo.bind(this))
         return router
     }
 

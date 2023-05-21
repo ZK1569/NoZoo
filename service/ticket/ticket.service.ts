@@ -98,4 +98,25 @@ export class TicketService {
 
         return false
     }
+
+    static canExitZoo = async (ticket: Document<unknown, {}, Ticket> & Omit<Ticket & Required<{_id: string;}>, never>): Promise<boolean> => {
+
+        // If the ticket is of type oneDayMonth, it is only reset and can be reused 
+        // Otherwise it is deleted 
+
+        const typeTicket = await TypeTicketModel.findById(ticket.type_ticket)
+        
+        if (typeTicket && typeTicket.name === "oneDayMonth"){
+            
+            ticket.is_in_use = false
+            ticket.save()
+            
+            return true
+        }
+
+        ticket.deleteOne()
+        ticket.save()
+        
+        return true 
+    }
 }
