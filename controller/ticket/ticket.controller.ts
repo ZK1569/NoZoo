@@ -1,18 +1,40 @@
-import { Model } from "mongoose"
+import { Document, Model } from "mongoose"
 import { Ticket, TicketModel, TypeTicketModel } from "../../models"
 import { Router, Request, Response } from "express"
 import * as express from "express"
 import { checkBody, checkTicket, checkUserRole, checkUserToken } from "../../middleware"
 import { TicketService } from "../../service"
+import { Zoo, ZooModel } from "../../models/zoo.model"
 
 export class TicketController {
 
     readonly path: string
     readonly model: Model<Ticket>
+    zoo: (Document<unknown, {}, Zoo> & Omit<Zoo & Required<{
+        _id: string;
+    }>, never>) | null
 
     constructor(){
         this.path = "/ticket"
         this.model = TicketModel
+        this.zoo = null
+    }
+
+    private loadZoo = async ():Promise<void> => {
+        if (this.zoo){
+            return
+        }
+        this.zoo = await ZooModel.findOne({
+            name: "NoZoo"
+        }).populate({
+            path: "spaces",
+            populate: ({
+                path: "maintenance_booklet"
+            })
+        }).populate({
+            path:"employee_post"
+        }).exec()
+        
     }
 
     readonly paramsCreateTicket = {
@@ -75,8 +97,17 @@ export class TicketController {
         if(!canBeUse){res.status(403).json({"message" : "You cannot access the park now"}); return }
 
         ticket.is_in_use = true
-
         ticket.save()
+        
+        await this.loadZoo()
+        
+        if(this.zoo){
+            console.log(this.zoo.totalVisitors);
+            
+            this.zoo.totalVisitors = this.zoo.totalVisitors + 1 
+            this.zoo.save()
+        }
+
 
         res.status(200).json({"message" : "Welcome"})
         return 
