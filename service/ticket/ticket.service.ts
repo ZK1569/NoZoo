@@ -1,5 +1,5 @@
 import { Document, Model } from "mongoose"
-import { SpaceModel, Ticket, TypeTicketModel } from "../../models"
+import { Space, SpaceModel, Ticket, TypeTicketModel } from "../../models"
 
 export class TicketService {
     
@@ -59,6 +59,31 @@ export class TicketService {
 
     static canAccessSpace = async (ticket: Document<unknown, {}, Ticket> & Omit<Ticket & Required<{_id: string;}>, never>, space_id: string): Promise<boolean> => {
 
+        // Functionality of the escapeGame type :
+        //      Tickets of type escapeGame can only access the space that is in the last index of the list (accessible_spaces), 
+        //      this list is used as a stack and once access is given, the last element is deleted
+
+        // For typeTicket escapeGame 
+        const typeTicket = await TypeTicketModel.findById(ticket.type_ticket._id)
+        if(typeTicket){
+            
+            if(typeTicket.name === "escapeGame"){
+                const space = ticket.accessible_spaces.at(-1)
+                
+                const spaceInfo = await SpaceModel.findById(space).exec()
+                
+                if(spaceInfo && spaceInfo._id == space_id){
+                    ticket.accessible_spaces.pop()
+                    ticket.save()
+                    return true
+                    
+                }
+                return false
+            }
+        }
+        
+
+        // For all others types
         for (let space of ticket.accessible_spaces){
             if (space._id == space_id){
                 const spaceInfo = await SpaceModel.findById(space_id).exec()
