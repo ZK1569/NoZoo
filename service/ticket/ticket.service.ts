@@ -51,7 +51,6 @@ export class TicketService {
             case "annual":
 
                 if (currentDate.getFullYear() === ticket.creation_date.getFullYear()){
-                    console.log("c'est un pass annuel");
                     
                     return true
                 }
@@ -88,6 +87,7 @@ export class TicketService {
                     return true
                     
                 }
+                
                 return false
             }
         }
@@ -114,7 +114,7 @@ export class TicketService {
         // If the ticket is of type oneDayMonth, it is only reset and can be reused 
         // Otherwise it is deleted 
 
-        const typeTicket = await TypeTicketModel.findById(ticket.type_ticket)
+        const typeTicket = await TypeTicketModel.findById(ticket._id)
         
         if (typeTicket && typeTicket.name === "oneDayMonth"){
             
@@ -125,7 +125,6 @@ export class TicketService {
         }
 
         ticket.deleteOne()
-        ticket.save()
         
         return true 
     }
