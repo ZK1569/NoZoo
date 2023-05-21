@@ -77,7 +77,7 @@ const typeTickets = async () => {
     }
 
 
-    const ticketNames: string[] = ["day", "weekEnd", "oneDayMonth", "escapeGame", "night"]
+    const ticketNames: string[] = ["day", "weekEnd", "oneDayMonth", "escapeGame", "night", "annual"]
     const tocketRequest = ticketNames.map((type) => {
         TypeTicketModel.create({
             name: type

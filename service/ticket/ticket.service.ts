@@ -47,6 +47,16 @@ export class TicketService {
                 }
                 
                 return false
+            
+            case "annual":
+
+                if (currentDate.getFullYear() === ticket.creation_date.getFullYear()){
+                    console.log("c'est un pass annuel");
+                    
+                    return true
+                }
+                return false
+                
                 
             default:
                 console.log("ERROR: There was a problem with the verification of the tickets");
