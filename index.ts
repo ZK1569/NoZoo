@@ -103,7 +103,8 @@ const zooCreation = async () => {
         name: "NoZoo",
         spaces: [],
         is_open: false,
-        employee_post
+        employee_post,
+        totalVisitors: 0
     })
 
 }
