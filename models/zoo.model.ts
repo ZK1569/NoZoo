@@ -26,6 +26,10 @@ const zooShemma = new Schema<Zoo>({
     totalVisitors: {
         type: Schema.Types.Number,
         required: true
+    },
+    visitorsLive: {
+        type: Schema.Types.Number,
+        required: true
     }
 }, {
     versionKey: false,
@@ -38,7 +42,8 @@ export interface Zoo{
     spaces: Space[],
     is_open: boolean,
     employee_post: Employee_post,
-    totalVisitors: number
+    totalVisitors: number,
+    visitorsLive: number
 }
 
 export const ZooModel: Model<Zoo> = mongoose.model("Zoo", zooShemma)

@@ -104,7 +104,8 @@ const zooCreation = async () => {
         spaces: [],
         is_open: false,
         employee_post,
-        totalVisitors: 0
+        totalVisitors: 0,
+        visitorsLive: 0
     })
 
 }

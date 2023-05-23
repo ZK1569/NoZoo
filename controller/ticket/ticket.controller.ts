@@ -102,9 +102,9 @@ export class TicketController {
         await this.loadZoo()
         
         if(this.zoo){
-            console.log(this.zoo.totalVisitors);
-            
+
             this.zoo.totalVisitors = this.zoo.totalVisitors + 1 
+            this.zoo.visitorsLive = this.zoo.visitorsLive + 1
             this.zoo.save()
         }
 
@@ -156,6 +156,14 @@ export class TicketController {
         if (!canGo){
             res.status(403).json({"message": "You cannot exit the zoo"})
             return 
+        }
+
+        await this.loadZoo()
+        
+        if(this.zoo){
+            
+            this.zoo.visitorsLive = this.zoo.visitorsLive - 1
+            this.zoo.save()
         }
 
         res.status(200).json({"message": "GoodBye"})
