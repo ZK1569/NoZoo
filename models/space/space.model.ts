@@ -43,7 +43,10 @@ const spaceShemma = new Schema<Space>({
     }],
     time:{
         type: Schema.Types.Date
-    }
+    },
+    // image:{
+    //     type: Schema.Types
+    // }
 
 
 }, {
@@ -55,7 +58,7 @@ export interface Space{
     _id: string, 
     name: string,
     description: string,
-    // image: Object, // Save the img as GridFS
+    // image: File, // Save the img as GridFS
     type: string[] // A list of all the characteristics of the space (Ex: Feline, dangerous, nocturnal, ...)
     capacity: number,
     time: Date,
