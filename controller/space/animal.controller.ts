@@ -37,7 +37,10 @@ export class AnimalController {
 
         try {
             const animalInfo = await AnimalModel.findById(ID).populate({
-                path: "health_booklet"
+                path: "health_booklet",
+                populate: ({
+                    path: "veto"
+                })
             }).exec();
             
             if (!animalInfo) {
