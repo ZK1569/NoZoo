@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model } from "mongoose";
+import mongoose, { Schema, Model, Date } from "mongoose";
 import { AnimalGroup } from "./animalGroup.model";
 import { MaintenanceBooklet } from "./maintenanceBooklet.model";
 
@@ -37,7 +37,14 @@ const spaceShemma = new Schema<Space>({
         type: Schema.Types.ObjectId,
         ref: "AnimalGroup", 
         require: true
-    }]
+    }],
+    type:[{
+        type : Schema.Types.String
+    }],
+    time:{
+        type: Schema.Types.Date
+    }
+
 
 }, {
     versionKey: false,
@@ -49,9 +56,9 @@ export interface Space{
     name: string,
     description: string,
     // image: Object, // Save the img as GridFS
-    // type: string // A list of all the characteristics of the space (Ex: Feline, dangerous, nocturnal, ...)
-    capacity: number
-    // time: string,
+    type: string[] // A list of all the characteristics of the space (Ex: Feline, dangerous, nocturnal, ...)
+    capacity: number,
+    time: Date,
     open: boolean,
     handicapped_access: boolean,
     maintenance: boolean,
