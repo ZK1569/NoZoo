@@ -66,7 +66,8 @@ export class SpacesController {
             maintenance_booklet: [],
             animal_species: [] ,
             type : [],
-            time : Date.now
+            time : Date.now,
+            image : ""
         })
 
         await this.loadZoo()
