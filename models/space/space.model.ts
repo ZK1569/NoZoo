@@ -45,6 +45,7 @@ const spaceShemma = new Schema<Space>({
 })
 
 export interface Space{
+    _id: string, 
     name: string,
     description: string,
     // image: Object, // Save the img as GridFS
