@@ -1,0 +1,6 @@
+export * from './user.controller'
+export * from './administration/zoo.controller'
+export * from './space/animal.controller'
+export * from './space/animalGroup.controller'
+export * from './space/space.controller'
+export * from './ticket/ticket.controller'
