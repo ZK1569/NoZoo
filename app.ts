@@ -6,7 +6,7 @@ const app = express()
 
 app.get("/", (req:Request, res:Response) => {
         res.send('Server up')
-    })
+})
 
 const userController = new UserController()
 const spaceController = new SpacesController()

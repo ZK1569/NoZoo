@@ -2,7 +2,7 @@ import {config} from "dotenv";
 config();
 
 import * as mongoose from 'mongoose'
-import { RoleModel, TicketModel, TypeTicketModel } from "./models";
+import { RoleModel, TypeTicketModel } from "./models";
 import morgan = require("morgan");
 import { ZooModel } from "./models/zoo.model";
 import { Employee_postModel } from "./models/administration/employee_post.model";
