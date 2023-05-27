@@ -1,4 +1,5 @@
 import mongoose, { Schema, Model } from "mongoose";
+import { User } from "../user.model";
 
 const healthBookletShemma = new Schema<HealthBooklet>({
     action: {
@@ -12,7 +13,7 @@ const healthBookletShemma = new Schema<HealthBooklet>({
     },
     veto:{
         type: Schema.Types.ObjectId,
-        index: true,
+        req: "User",
     }
 }, {
     versionKey: false,
@@ -22,7 +23,7 @@ const healthBookletShemma = new Schema<HealthBooklet>({
 export interface HealthBooklet{
     action: string,
     date: Date, 
-    veto?: Object
+    veto: User
 }
 
 export const HealthBookletModel: Model<HealthBooklet> = mongoose.model("HealthBooklet", healthBookletShemma)
