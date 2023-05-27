@@ -64,7 +64,10 @@ export class SpacesController {
             handicapped_access: req.body.handicapped_access,
             maintenance: false,
             maintenance_booklet: [],
-            animal_species: []  
+            animal_species: [] ,
+            type : [],
+            time : Date.now,
+            image : ""
         })
 
         await this.loadZoo()
