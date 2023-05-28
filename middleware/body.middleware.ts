@@ -13,19 +13,19 @@ export function checkBody(params: Record<string, string>): RequestHandler{
         for (let param of Object.keys(params)){
             let type = params[param]
 
-            if (!(param in req.body)){
+            if (!(param in req.body )&& !type.includes('undefined')){
                 res.status(400).end()
                 return
             }
 
             // Check the type
-            if ( typeof req.body[param] !== type){
-                console.log(`${param} not the right type, now it's ${typeof req.body[param]}`);
+            if ( !type.includes(typeof req.body[param])){
+                console.log(`${param} not the right type, now it's ${typeof req.body[param]} must be ${type}`);
                 
                 res.status(400).end()
                 return
             }
-            
+               
         }
     
         next()
