@@ -73,10 +73,20 @@ export class UserController {
             return 
         }
 
-        const user = await UserModel.findOne({
-            login: req.body.login,
-            password: SecurityUtils.toSHA512(req.body.password)
-        })
+        let user 
+        try{
+            user = await UserModel.findOne({
+                login: req.body.login,
+                password: SecurityUtils.toSHA512(req.body.password)
+            })
+        }catch(err){
+            res.status(500).end()
+            return
+        }
+        if (!user){
+            res.status(500).end()
+            return
+        }
         
         // Platform
         const platform = req.headers['user-agent']

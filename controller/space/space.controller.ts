@@ -66,7 +66,7 @@ export class SpacesController {
             maintenance_booklet: [],
             animal_species: [] ,
             type : [],
-            time : Date.now,
+            time : Date(),
             image : ""
         })
 
