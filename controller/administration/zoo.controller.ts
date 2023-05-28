@@ -1,4 +1,4 @@
-import { Model } from "mongoose"
+import { Document, Model } from "mongoose"
 import { Zoo, ZooModel } from "../../models/zoo.model"
 import { Router, Request, Response } from "express"
 
@@ -13,7 +13,9 @@ export class ZooController {
 
     readonly path: string
     readonly model: Model<Zoo>
-    zoo: Zoo | null
+    zoo: (Document<unknown, {}, Zoo> & Omit<Zoo & Required<{
+        _id: string;
+    }>, never>) | null
 
     constructor(){
         this.path = "/zoo"
