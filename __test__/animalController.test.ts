@@ -42,8 +42,8 @@ describe('AnimalController', () => {
       .send(animal)
       .expect(201)
 
-      console.log('Response status:', response.status);
-      console.log('Response body:', response.body);
+      // console.log('Response status:', response.status);
+      // console.log('Response body:', response.body);
 
 
     expect(response.body).toHaveProperty('_id');

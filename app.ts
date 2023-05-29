@@ -1,9 +1,9 @@
-import * as express from 'express'
-import {Request, Response} from 'express'
+const express = require('express');
+        import {Request, Response} from 'express'
 import { AnimalController, AnimalGroupController, SpacesController, TicketController, UserController, ZooController } from './controller'
 import { mockAuthMiddleware } from './__test__/auth.mock'
 
-const app = express()
+        const app = express()
 
 app.get("/", (req:Request, res:Response) => {
         res.send('Server up')
