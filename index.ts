@@ -7,6 +7,7 @@ import { Response, Request} from "express"
 import * as morgan from 'morgan'
 import { StartService } from "./service";
 import { UserController, SpacesController, AnimalController, AnimalGroupController, ZooController, TicketController } from './controller'
+const listEndpoints = require('express-list-endpoints')
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
@@ -46,6 +47,8 @@ const startServer = async (): Promise<void> => {
     app.listen(process.env.PORT, () => {
         console.log(`Server up on PORT : ${process.env.PORT}`)
     })
+
+    console.table(listEndpoints(app))
        
 }
 
