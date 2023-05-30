@@ -4,14 +4,9 @@ config();
 import * as express from 'express'
 import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
-import { UserController } from "./controller/user.controller";
-import { SpacesController } from "./controller/space/space.controller"
-import { AnimalController } from "./controller/space/animal.controller";
-import { AnimalGroupController } from "./controller/space/animalGroup.controller";
 import morgan  from "morgan"
-import { ZooController } from "./controller/administration/zoo.controller";
-import { TicketController } from "./controller/ticket/ticket.controller";
 import { StartService } from "./service";
+import { UserController, SpacesController, AnimalController, AnimalGroupController, ZooController, TicketController } from './controller'
 
 const startServer = async (): Promise<void> => {
     const connection = await mongoose.connect(process.env.MONGODB_URI as string, {auth: {
