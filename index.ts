@@ -10,7 +10,7 @@ import { Role, RoleModel, TypeTicketModel, UserModel } from "./models";
 import { SpacesController } from "./controller/space/space.controller"
 import { AnimalController } from "./controller/space/animal.controller";
 import { AnimalGroupController } from "./controller/space/animalGroup.controller";
-import morgan = require("morgan");
+import morgan  from "morgan"
 import { ZooController } from "./controller/administration/zoo.controller";
 import { ZooModel } from "./models/zoo.model";
 import { Employee_postModel } from "./models/administration/employee_post.model";
