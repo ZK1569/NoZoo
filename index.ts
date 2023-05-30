@@ -4,7 +4,7 @@ config();
 import * as express from 'express'
 import * as mongoose from 'mongoose'
 import { Response, Request} from "express"
-import morgan  from "morgan"
+import * as morgan from 'morgan'
 import { StartService } from "./service";
 import { UserController, SpacesController, AnimalController, AnimalGroupController, ZooController, TicketController } from './controller'
 
