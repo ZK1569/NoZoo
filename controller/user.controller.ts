@@ -158,7 +158,7 @@ export class UserController {
         const router = express.Router()
         router.post(`/subscribe`, express.json(), this.subscribe.bind(this))
         router.post('/login', express.json(), this.login.bind(this))
-        router.patch('/role', express.json(), checkUserToken(), checkUserRole('admin'), this.addRole.bind(this))
+        // router.patch('/role', express.json(), checkUserToken(), checkUserRole('admin'), this.addRole.bind(this))
         router.delete('/logout', checkUserToken(), this.logout.bind(this))
         router.get('/me', checkUserToken(), this.me.bind(this))
         router.get('/role', checkUserToken(), checkUserRole('admin'), this.getRoles.bind(this)) // Return the list of all possible roles 
