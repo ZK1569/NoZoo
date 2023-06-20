@@ -2,7 +2,8 @@ import { Model } from "mongoose"
 import { Animal, AnimalModel, HealthBookletModel, Role } from "../../models"
 import { Router, Response, Request} from "express"
 import * as express from 'express'
-import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
+import { checkBody, checkQuery, checkUserRole, checkUserToken } from "../../middleware"
+import { RolesEnums } from "../../enums"
 
 
 export class AnimalController {
@@ -28,8 +29,8 @@ export class AnimalController {
         "date" : "string"
     }
 
-    readonly paramsGetAnimal = {
-        "animalId" : "string"
+    readonly queryGetAnimal = {
+        "id" : "string"
     }
 
     private getAnimalById = async (ID: string) => {
@@ -103,10 +104,10 @@ export class AnimalController {
 
     getAnimal = async (req:Request, res: Response): Promise<void> => {
 
-        const animal = await this.getAnimalById(req.body.animalId)
+        const animal = await this.getAnimalById(req.query.id as string)
 
         if(!animal){
-            res.status(404).end()
+            res.status(404).json({"messgae": "Animal not found"})
             return
         }
 
@@ -116,9 +117,9 @@ export class AnimalController {
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetAnimal), this.getAnimal.bind(this))
-        router.post('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsCreateAnimal), this.creatAnimal.bind(this))
-        router.post('/treatment', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
+        router.get('/', checkUserToken(), checkQuery(this.queryGetAnimal), this.getAnimal.bind(this))
+        router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsCreateAnimal), this.creatAnimal.bind(this))
+        router.post('/treatment', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
         return router
     }
 }

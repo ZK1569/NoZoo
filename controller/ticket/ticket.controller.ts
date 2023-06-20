@@ -2,9 +2,10 @@ import { Document, Model } from "mongoose"
 import { Ticket, TicketModel, TypeTicketModel } from "../../models"
 import { Router, Request, Response } from "express"
 import * as express from "express"
-import { checkBody, checkTicket, checkUserRole, checkUserToken } from "../../middleware"
+import { checkBody, checkQuery, checkTicket, checkUserRole, checkUserToken } from "../../middleware"
 import { TicketService } from "../../service"
 import { Zoo, ZooModel } from "../../models/zoo.model"
+import { RolesEnums } from "../../enums"
 
 export class TicketController {
 
@@ -47,7 +48,13 @@ export class TicketController {
 
         if(!req.user){res.status(401).end(); return }
 
-        const type_ticket = await TypeTicketModel.findById(req.body.type_ticket_id).exec()
+        let type_ticket
+        try{
+            type_ticket = await TypeTicketModel.findById(req.body.type_ticket_id).exec()
+        }catch(err){
+            res.status(400).json({"message": "This is not a valid type ticket id"})
+            return 
+        }
         
         const ticket = await TicketModel.create({
             user: req.user,
@@ -61,20 +68,24 @@ export class TicketController {
         return 
     }
 
-    readonly paramsGetTicket = {
-        "ticket_id": "string"
+    readonly queryGetTicket = {
+        "id": "string"
     }
 
     getTicket = async (req: Request, res: Response): Promise<void> => {
-
-        const ticket = await TicketModel.findById(req.body.ticket_id).populate({
-            path: "user", 
-        }).populate({
-            path: "accessible_spaces",
-        })
-
-        res.status(200).json(ticket)
-        return 
+        try{
+            const ticket = await TicketModel.findById(req.query.id).populate({
+                path: "user", 
+            }).populate({
+                path: "accessible_spaces",
+            })
+    
+            res.status(200).json(ticket)
+            return 
+        }catch(err){
+            res.status(400).json({"message": "This is not a valid ticket id"})
+            return 
+        }
     }
 
     readonly paramsCheckTicketAccess = {
@@ -83,7 +94,13 @@ export class TicketController {
 
     checkTicketZooAccess = async (req:Request, res:Response): Promise<void> => {
 
-        const ticket = await TicketModel.findById(req.body.ticket_id)
+        let ticket
+        try{
+            ticket = await TicketModel.findById(req.body.ticket_id)
+        }catch(err){
+            res.status(400).json({"message": "Your ticket is not valid"})
+            return
+        }
 
         if (!ticket){res.status(404).json({"message" : "Your ticket is not valid "}); return }
 
@@ -120,7 +137,13 @@ export class TicketController {
 
     checkTicketSpaceAccess = async (req:Request, res:Response): Promise<void> => {
 
-        const ticket = await TicketModel.findById(req.body.ticket_id)
+        let ticket
+        try{
+            ticket = await TicketModel.findById(req.body.ticket_id)
+        }catch(err){
+            res.status(400).json({"message": "Your ticket is not valid"})
+            return
+        }
 
         if (!ticket){res.status(401).json({"message": "Your ticket is not valid"}); return}
 
@@ -142,7 +165,13 @@ export class TicketController {
 
     ticketOutZoo = async (req:Request, res: Response): Promise<void> => {
 
-        const ticket = await TicketModel.findById(req.body.ticket_id)
+        let ticket
+        try{
+            ticket = await TicketModel.findById(req.body.ticket_id)
+        }catch(err){
+            res.status(400).json({"message": "Your ticket is not valid"})
+            return
+        }
 
         if (!ticket){res.status(404).json({"message" : "Your ticket is not valid "}); return }
 
@@ -154,7 +183,7 @@ export class TicketController {
         const canGo = await TicketService.canExitZoo(ticket)
 
         if (!canGo){
-            res.status(403).json({"message": "You cannot exit the zoo"})
+            res.status(403).json({"message": "You cannot exit the zoo. You're going to stay here for the rest of your life"})
             return 
         }
 
@@ -173,8 +202,8 @@ export class TicketController {
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.get('/', express.json(),checkUserToken(), checkBody(this.paramsGetTicket), this.getTicket.bind(this))
-        router.post("/", express.json(), checkUserToken(), checkUserRole("guest"), checkBody(this.paramsCreateTicket), this.createTicket.bind(this))
+        router.get('/', checkUserToken(), checkQuery(this.queryGetTicket), this.getTicket.bind(this))
+        router.post("/", express.json(), checkUserToken(), checkUserRole(RolesEnums.guest), checkBody(this.paramsCreateTicket), this.createTicket.bind(this))
         router.patch('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess),checkTicket(), this.checkTicketZooAccess.bind(this))
         router.patch('/space', express.json(), checkBody(this.paramsCheckTicketSpaceAccess), checkTicket(), this.checkTicketSpaceAccess.bind(this))
         router.delete('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess), checkTicket(), this.ticketOutZoo.bind(this))

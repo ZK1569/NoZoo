@@ -73,7 +73,7 @@ export class StartService{
         const usersRequest = usersNames.map((login) => {
             let userRoles:(Document<unknown, {}, Role> & Omit<Role & {_id: Types.ObjectId;}, never>)[] = []
             if (login.includes("admin")){
-                userRoles = roles
+                userRoles = roles.map((role) => {if(role.name === "admin"){return role} else {return null}}).filter((role) => {if(role){return role} else {return null}}) as (Document<unknown, {}, Role> & Omit<Role & {_id: Types.ObjectId;}, never>)[]
             }else{
                 userRoles = roles.map((role) => {if(role.name === "guest"){return role} else {return null}}).filter((role) => {if(role){return role} else {return null}}) as (Document<unknown, {}, Role> & Omit<Role & {_id: Types.ObjectId;}, never>)[]
             }
