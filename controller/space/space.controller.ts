@@ -2,7 +2,7 @@ import { Model } from "mongoose"
 import { AnimalGroupModel, MaintenanceBookletModel, Role, RoleModel, SessionModel, Space, SpaceModel, User, UserModel } from "../../models"
 import { Router, Response, Request} from "express"
 import * as express from 'express'
-import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
+import { checkBody, checkQuery, checkUserRole, checkUserToken } from "../../middleware"
 import { Zoo, ZooModel } from "../../models/zoo.model"
 import { RolesEnums } from "../../enums"
 
@@ -26,8 +26,8 @@ export class SpacesController {
         "handicapped_access": "boolean"
     }
 
-    readonly paramsGetSpaceInfo = {
-        "spaceId": "string"
+    readonly queryGetSpaceInfo = {
+        "id": "string"
     }
 
     readonly paramsAddAnimalGroup = {
@@ -87,10 +87,17 @@ export class SpacesController {
 
     addAnimalGroup = async (req: Request, res: Response): Promise<void> => {
 
-        const space = await SpaceModel.findById(req.body.spaceId).exec()
-        const animalGroup = await AnimalGroupModel.findById(req.body.animalGroupId).exec()
+        let space
+        let animalGroup
+        try{
+            space = await SpaceModel.findById(req.body.spaceId).exec()
+            animalGroup = await AnimalGroupModel.findById(req.body.animalGroupId).exec()
+        }catch(err){
+            res.status(404).json({"message": "Space or Animal id is not correct"})
+            return 
+        }
 
-        if (!space || !animalGroup){res.status(400).end(); return }
+        if (!space || !animalGroup){res.status(404).json({"message" : "Space or Animal Group not found"}); return }
 
         if (space.animal_species.length >= space.capacity){
             res.status(422).json({"message": "The space is full, it is no longer possible to add groups of animals"})
@@ -107,7 +114,7 @@ export class SpacesController {
             res.status(200).end()
             return 
         } else {
-            res.status(409).end()
+            res.status(409).json({"message": "This animal group is already in this space"})
             return 
         }
     
@@ -116,7 +123,7 @@ export class SpacesController {
     getSpace = async (req: Request, res: Response): Promise<void> => {
 
         try{
-            const space = await SpaceModel.findById(req.body.spaceId).populate({
+            const space = await SpaceModel.findById(req.query.id).populate({
                 path: "animal_species",
                 populate: {
                     path: "animals"
@@ -126,48 +133,63 @@ export class SpacesController {
             }).exec()
             
             if(!space){
-                res.status(404).end()
+                res.status(404).json({"message": "Space not found"})
                 return
             }
             res.send(space)
+            return
 
         }catch (error) {
             console.error(`Error in getSpace: ${error}`);
-            res.status(404).end()
+            res.status(404).json({"message": "This is not a valid space id"})
             return 
         }
         
     }
 
     switchMaintenance = async (req:Request, res:Response): Promise<void> => {
-
-        await SpaceModel.updateOne(
-            { _id: req.body.spaceId },  
-            { $set: { maintenance: req.body.state } } 
-        );
-
-        res.status(200).end()
-        return      
+        try{
+            await SpaceModel.updateOne(
+                { _id: req.body.spaceId },  
+                { $set: { maintenance: req.body.state } } 
+            );
+    
+            res.status(200).end()
+            return      
+        }catch(err){
+            res.status(400).json({"message": "This is not a valid space id"})
+            return
+        }
     }
 
     switchOpen = async (req:Request, res:Response): Promise<void> => {
-        await SpaceModel.updateOne(
-            { _id: req.body.spaceId },  
-            { $set: { open: req.body.state } } 
-        );
-
-        res.status(200).end()
-        return    
+        try{
+            await SpaceModel.updateOne(
+                { _id: req.body.spaceId },  
+                { $set: { open: req.body.state } } 
+            );
+    
+            res.status(200).end()
+            return    
+        }catch(err){
+            res.status(400).json({"message": "This is not a valid space id"})
+            return
+        }
     }
 
     switchHandicap = async (req:Request, res:Response): Promise<void> => {
-        await SpaceModel.updateOne(
-            { _id: req.body.spaceId },  
-            { $set: { handicapped_access: req.body.state } } 
-        );
-
-        res.status(200).end()
-        return   
+        try{
+            await SpaceModel.updateOne(
+                { _id: req.body.spaceId },  
+                { $set: { handicapped_access: req.body.state } } 
+            );
+    
+            res.status(200).end()
+            return   
+        }catch(err){
+            res.status(400).json({"message": "This is not a valid space id"})
+            return
+        }
     }
 
     addMaintenanceTask = async (req:Request, res:Response): Promise<void> => {
@@ -186,14 +208,14 @@ export class SpacesController {
             res.status(200).end()
             return 
         }catch(err){
-            res.status(500).end()
+            res.status(500).json({"message": "This mistake will never happen"})
             return 
         }
     }
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetSpaceInfo), this.getSpace.bind(this))
+        router.get('/', checkUserToken(), checkQuery(this.queryGetSpaceInfo), this.getSpace.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsCreateSpace), this.createSpace.bind(this))
         router.patch('/maintenance', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsMaintenance), this.switchMaintenance.bind(this))
         router.patch('/open', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsMaintenance), this.switchOpen.bind(this))
