@@ -6,6 +6,7 @@ import * as express from "express"
 import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
 import { Employee_post, Employee_postModel } from "../../models/administration/employee_post.model"
 import { UserModel } from "../../models"
+import { RolesEnums } from "../../enums"
 
 
 
@@ -282,11 +283,11 @@ export class ZooController {
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.get('/', checkUserToken(), checkUserRole('admin'), this.getZoo.bind(this))
-        // router.post('/', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
+        router.get('/', checkUserToken(), checkUserRole(RolesEnums.admin), this.getZoo.bind(this))
+        // router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsNewZoo), this.newZoo.bind(this))
         router.patch('/employee/in', express.json(), checkBody(this.paramsEmployeeIn), this.employeeIn.bind(this))
         router.patch('/employee/out', express.json(), checkBody(this.paramsEmployeeOut), this.employeeOut.bind(this))
-        router.patch("/open", express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsOpenZoo), this.openZoo.bind(this))
+        router.patch("/open", express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsOpenZoo), this.openZoo.bind(this))
         return router
     }
 

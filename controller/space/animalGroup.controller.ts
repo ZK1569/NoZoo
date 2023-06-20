@@ -3,6 +3,7 @@ import { AnimalGroup, AnimalGroupModel, AnimalModel } from "../../models"
 import { Router, Request, Response } from "express"
 import * as express from 'express'
 import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
+import { RolesEnums } from "../../enums"
 
 
 export class AnimalGroupController{
@@ -111,8 +112,8 @@ export class AnimalGroupController{
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetGroup), this.getGroup.bind(this))
-        router.post('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsCreateGroup), this.createGroup.bind(this))
-        router.patch('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddAnimalInGroup), this.addAnimalInGroup.bind(this))
+        router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsCreateGroup), this.createGroup.bind(this))
+        router.patch('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsAddAnimalInGroup), this.addAnimalInGroup.bind(this))
         return router
     }
 }

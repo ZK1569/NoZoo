@@ -3,6 +3,7 @@ import { Animal, AnimalModel, HealthBookletModel, Role } from "../../models"
 import { Router, Response, Request} from "express"
 import * as express from 'express'
 import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
+import { RolesEnums } from "../../enums"
 
 
 export class AnimalController {
@@ -117,8 +118,8 @@ export class AnimalController {
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetAnimal), this.getAnimal.bind(this))
-        router.post('/', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsCreateAnimal), this.creatAnimal.bind(this))
-        router.post('/treatment', express.json(), checkUserToken(), checkUserRole("veterinarian"), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
+        router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsCreateAnimal), this.creatAnimal.bind(this))
+        router.post('/treatment', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsAddTreatment), this.addTreatment.bind(this))
         return router
     }
 }

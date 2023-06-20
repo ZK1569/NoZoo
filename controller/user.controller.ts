@@ -169,7 +169,7 @@ export class UserController {
         router.patch('/role', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsGiveRole), this.addRole.bind(this))
         router.delete('/logout', checkUserToken(), this.logout.bind(this))
         router.get('/me', checkUserToken(), this.me.bind(this))
-        router.get('/role', checkUserToken(), checkUserRole('admin'), this.getRoles.bind(this)) // Return the list of all possible roles 
+        router.get('/role', checkUserToken(), checkUserRole(RolesEnums.admin), this.getRoles.bind(this)) // Return the list of all possible roles 
 
         return router
     }

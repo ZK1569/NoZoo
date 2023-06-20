@@ -4,6 +4,7 @@ import { Router, Response, Request} from "express"
 import * as express from 'express'
 import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
 import { Zoo, ZooModel } from "../../models/zoo.model"
+import { RolesEnums } from "../../enums"
 
 
 export class SpacesController {
@@ -193,12 +194,12 @@ export class SpacesController {
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetSpaceInfo), this.getSpace.bind(this))
-        router.post('/', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsCreateSpace), this.createSpace.bind(this))
-        router.patch('/maintenance', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsMaintenance), this.switchMaintenance.bind(this))
-        router.patch('/open', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsMaintenance), this.switchOpen.bind(this))
-        router.patch('/handicap', express.json(), checkUserToken(), checkUserRole('admin'), checkBody(this.paramsMaintenance), this.switchHandicap.bind(this))
-        router.patch('/new/animal_group', express.json(), checkUserToken(), checkUserRole("admin"), checkBody(this.paramsAddAnimalGroup), this.addAnimalGroup.bind(this))
-        router.patch('/new/maintenance_task', express.json(), checkUserToken(), checkUserRole('maintenance agent'), checkBody(this.paramsMaintenanceTask), this.addMaintenanceTask.bind(this))
+        router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsCreateSpace), this.createSpace.bind(this))
+        router.patch('/maintenance', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsMaintenance), this.switchMaintenance.bind(this))
+        router.patch('/open', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsMaintenance), this.switchOpen.bind(this))
+        router.patch('/handicap', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsMaintenance), this.switchHandicap.bind(this))
+        router.patch('/new/animal_group', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsAddAnimalGroup), this.addAnimalGroup.bind(this))
+        router.patch('/new/maintenance_task', express.json(), checkUserToken(), checkUserRole(RolesEnums.maintenance_agent), checkBody(this.paramsMaintenanceTask), this.addMaintenanceTask.bind(this))
         return router
     }
 

@@ -5,6 +5,7 @@ import * as express from "express"
 import { checkBody, checkTicket, checkUserRole, checkUserToken } from "../../middleware"
 import { TicketService } from "../../service"
 import { Zoo, ZooModel } from "../../models/zoo.model"
+import { RolesEnums } from "../../enums"
 
 export class TicketController {
 
@@ -174,7 +175,7 @@ export class TicketController {
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', express.json(),checkUserToken(), checkBody(this.paramsGetTicket), this.getTicket.bind(this))
-        router.post("/", express.json(), checkUserToken(), checkUserRole("guest"), checkBody(this.paramsCreateTicket), this.createTicket.bind(this))
+        router.post("/", express.json(), checkUserToken(), checkUserRole(RolesEnums.guest), checkBody(this.paramsCreateTicket), this.createTicket.bind(this))
         router.patch('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess),checkTicket(), this.checkTicketZooAccess.bind(this))
         router.patch('/space', express.json(), checkBody(this.paramsCheckTicketSpaceAccess), checkTicket(), this.checkTicketSpaceAccess.bind(this))
         router.delete('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess), checkTicket(), this.ticketOutZoo.bind(this))
