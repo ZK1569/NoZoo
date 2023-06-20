@@ -35,7 +35,7 @@ export class UserController {
 
     addRole = async (req:Request, res:Response): Promise<void> => {
 
-        if(!req.user){res.send(401).end(); return}
+        if(!req.user){res.status(500).end(); return}
 
         // Check that we don't assign roles to ourselves 
         if ( req.body.user_id === String(req.user._id)){
@@ -63,20 +63,15 @@ export class UserController {
         }
     }
 
+    readonly paramsSubscribe = {
+        "login" : "string",
+        "password" : "string"
+    }
+
     subscribe = async (req: Request, res: Response):Promise<void> => {
         
-        if(!req.body){
-            res.status(400).end()
-            return 
-        }
-        
-        if (typeof req.body.login !== "string" || req.body.login.length < 4){
-            res.status(400).end()
-            return
-        }
-        
-        if (typeof req.body.password !== "string" || req.body.password.length < 8){
-            res.status(400).end()
+        if (req.body.login.length < 4 || req.body.password.length < 8){
+            res.status(400).json({"message" : "Login or password too short"})
             return
         }
 
@@ -95,7 +90,7 @@ export class UserController {
         }catch(err: unknown){
             const me = err as {[key: string]: unknown}
             if (me['name'] === "MongoServerError" && me['code'] === 11000){
-                res.status(409).end()
+                res.status(409).json({"message" : "Login already taken"})
             }else{
                 res.status(500).end()
             }
@@ -103,12 +98,12 @@ export class UserController {
 
     }
 
-    login = async (req: Request, res: Response): Promise<void> => {
-        if (!req.body || typeof req.body.login !== "string" || typeof req.body.password !== 'string'){
-            res.status(400).end()
-            return 
-        }
+    readonly paramsLogin = {
+        "login" : "string",
+        "password" : "string"
+    }
 
+    login = async (req: Request, res: Response): Promise<void> => {
         let user 
         try{
             user = await UserModel.findOne({
@@ -116,7 +111,7 @@ export class UserController {
                 password: SecurityUtils.toSHA512(req.body.password)
             })
         }catch(err){
-            res.status(500).end()
+            res.status(404).json({"message": "User not found"})
             return
         }
         if (!user){
@@ -142,11 +137,11 @@ export class UserController {
         const session = req.session
 
         if (!session){
-            res.status(401).end(); // unauthorized
+            res.status(404).json({"message": "This session does not exist"});
             return;
         }
 
-        const delSession = await SessionModel.deleteOne({_id: session})
+        await SessionModel.deleteOne({_id: session})
 
         res.status(200).end()
     }
@@ -164,8 +159,8 @@ export class UserController {
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.post(`/subscribe`, express.json(), this.subscribe.bind(this))
-        router.post('/login', express.json(), this.login.bind(this))
+        router.post(`/subscribe`, express.json(),checkBody(this.paramsSubscribe), this.subscribe.bind(this))
+        router.post('/login', express.json(),checkBody(this.paramsLogin), this.login.bind(this))
         router.patch('/role', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsGiveRole), this.addRole.bind(this))
         router.delete('/logout', checkUserToken(), this.logout.bind(this))
         router.get('/me', checkUserToken(), this.me.bind(this))
