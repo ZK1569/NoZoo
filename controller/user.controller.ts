@@ -3,7 +3,8 @@ import { Role, RoleModel, SessionModel, User, UserModel } from "../models"
 import { Router, Response, Request} from "express"
 import * as express from 'express'
 import { SecurityUtils } from "../utils"
-import { checkUserRole, checkUserToken } from "../middleware"
+import { checkBody, checkUserRole, checkUserToken } from "../middleware"
+import { RolesEnums } from "../enums"
 
 
 export class UserController {
@@ -25,6 +26,41 @@ export class UserController {
         this.guestRole = await RoleModel.findOne({
             name: "guest"
         }).exec()
+    }
+
+    readonly paramsGiveRole = {
+        "user_id" : "string",
+        "role" : "string"
+    }
+
+    addRole = async (req:Request, res:Response): Promise<void> => {
+
+        if(!req.user){res.send(401).end(); return}
+
+        // Check that we don't assign roles to ourselves 
+        if ( req.body.user_id === String(req.user._id)){
+            res.status(409).json({"message" : "You can't assign roles to yourself"})
+            return
+        }
+
+        try{
+            const role = await RoleModel.findById(req.body.role)
+            const user = await UserModel.findById(req.body.user_id)
+            if(!role || !user){res.status(404).json({"message" : "Role or User not found"}); return}
+            if(!user.roles.some(userRole => String(role._id) === String(userRole._id))){
+                user.roles.push(role)
+                user.save()
+                res.status(200).json({"message" : "Role assign"})
+                return 
+            }
+        
+            res.status(409).json({"message" : "The user already has the role"})
+            return
+
+        }catch(err){
+            res.status(400).json({"message" : "One of the ID is incorrect"})
+            return
+        }
     }
 
     subscribe = async (req: Request, res: Response):Promise<void> => {
@@ -119,34 +155,6 @@ export class UserController {
         res.json(req.user)
     }
 
-    addRole = async (req:Request, res:Response): Promise<void> => {
-
-        if(!req.user){res.send(401).end(); return}
-
-        const newRoles = ["admin", "guest"]
-
-        // Check that we don't assign roles to ourselves 
-        if ("6456ba2ab3a5d54d5297eff6" === req.user._id){
-            res.status(409).end()
-            return
-        }
-
-        // TODO: Verify that the user does not already have the role
-        
-        for (let role of newRoles){
-            const ModelOfRole = await RoleModel.findOne({ name: role }).exec();
-            
-            // Insertion
-            await UserModel.updateOne(
-                { _id: "6456ba2ab3a5d54d5297eff6" },  
-                { $push: { roles: ModelOfRole } } 
-            );
-      
-        }
-        res.status(200).end()
-        return 
-    }
-
     getRoles = async (req: Request, res: Response): Promise<void> => {
 
         const roles = await RoleModel.find()
@@ -158,7 +166,7 @@ export class UserController {
         const router = express.Router()
         router.post(`/subscribe`, express.json(), this.subscribe.bind(this))
         router.post('/login', express.json(), this.login.bind(this))
-        // router.patch('/role', express.json(), checkUserToken(), checkUserRole('admin'), this.addRole.bind(this))
+        router.patch('/role', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), checkBody(this.paramsGiveRole), this.addRole.bind(this))
         router.delete('/logout', checkUserToken(), this.logout.bind(this))
         router.get('/me', checkUserToken(), this.me.bind(this))
         router.get('/role', checkUserToken(), checkUserRole('admin'), this.getRoles.bind(this)) // Return the list of all possible roles 

@@ -26,7 +26,7 @@ export interface User{
     _id: string,
     login: string,
     password: string,
-    roles: string[] | Role[]
+    roles: Role[]
 }
 
 export const UserModel: Model<User> = mongoose.model("User", userShemma)
