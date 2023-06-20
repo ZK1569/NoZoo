@@ -1,5 +1,6 @@
 import { Document, Model } from "mongoose"
 import { Space, SpaceModel, Ticket, TypeTicketModel } from "../../models"
+import { TicketEnums } from "../../enums/ticket.enums";
 
 export class TicketService {
     
@@ -10,7 +11,7 @@ export class TicketService {
         if(!typeTicket){return false}
 
         switch(typeTicket.name){
-            case "weekEnd":
+            case TicketEnums.weekEnd:
                 // If the ticket is scanned during the weekend
                 if (!(6 <= currentDate.getDay() && currentDate.getDay() <= 7)){
                     return false
@@ -18,8 +19,8 @@ export class TicketService {
                 
                 // No return true to check that the user scan his ticket in the day too
 
-            case "escapeGame":
-            case "day": 
+            case TicketEnums.escapeGame:
+            case TicketEnums.day: 
 
                 // If the ticket is scanned during the day
                 if(8 < currentDate.getHours() && currentDate.getHours() < 20){
@@ -28,7 +29,7 @@ export class TicketService {
                 
                 return false
             
-            case "oneDayMonth":
+            case TicketEnums.oneDayMonth:
 
                 if(!ticket.last_activation_date || ticket.last_activation_date.getMonth() != currentDate.getMonth()){
                     if(8 < currentDate.getHours() && currentDate.getHours() < 20){
@@ -40,7 +41,7 @@ export class TicketService {
                 
                 return false
                 
-            case "night":
+            case TicketEnums.night:
                 // If the ticket is not scanned during the day
                 if(!(8 < currentDate.getHours() && currentDate.getHours() < 20)){
                     return true
@@ -48,7 +49,7 @@ export class TicketService {
                 
                 return false
             
-            case "annual":
+            case TicketEnums.annual:
 
                 if (currentDate.getFullYear() === ticket.creation_date.getFullYear()){
                     
