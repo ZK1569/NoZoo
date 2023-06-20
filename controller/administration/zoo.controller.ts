@@ -48,6 +48,7 @@ export class ZooController {
         await this.loadZoo()
         
         res.status(200).json(this.zoo)
+        return 
 
     }
 
