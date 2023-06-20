@@ -2,7 +2,7 @@ import { Model } from "mongoose"
 import { AnimalGroup, AnimalGroupModel, AnimalModel } from "../../models"
 import { Router, Request, Response } from "express"
 import * as express from 'express'
-import { checkBody, checkUserRole, checkUserToken } from "../../middleware"
+import { checkBody, checkQuery, checkUserRole, checkUserToken } from "../../middleware"
 import { RolesEnums } from "../../enums"
 
 
@@ -26,8 +26,8 @@ export class AnimalGroupController{
         "animalGroupId" : "string"
     }
 
-    readonly paramsGetGroup = {
-        "animalGroupId" : "string"
+    readonly queryGetGroup = {
+        "id" : "string"
     }
 
     createGroup = async (req: Request, res:Response): Promise<void> => {
@@ -44,9 +44,11 @@ export class AnimalGroupController{
             // If a group with the same name already exists then return an error 409
             const me = err as {[key: string]: unknown}
             if (me['name'] === "MongoServerError" && me['code'] === 11000){
-                res.status(409).end()
+                res.status(409).json({"message": "A group with the same name already exists"})
+                return
             }else{
                 res.status(500).end()
+                return
             }
         }   
     }
@@ -88,7 +90,7 @@ export class AnimalGroupController{
     getGroup = async (req:Request, res: Response): Promise<void> => {
 
         try{
-            const animalGroup = await AnimalGroupModel.findById(req.body.animalGroupId).populate({
+            const animalGroup = await AnimalGroupModel.findById(req.query.id).populate({
                 path: "animals",
                 populate: {
                     path: "health_booklet"
@@ -96,13 +98,14 @@ export class AnimalGroupController{
             }).exec()
             
             if(!animalGroup){
-                res.status(404).end()
+                res.status(404).json({"message": "Group not found"})
                 return
             }
             res.send(animalGroup)
         }catch (error) {
             console.error(`Error in getAnimalById: ${error}`);
-            res.status(400).end()
+            res.status(400).json({"message": "Invalid ID"})
+            return
         }
 
 
@@ -111,7 +114,7 @@ export class AnimalGroupController{
 
     buildRouter = (): Router => {
         const router = express.Router()
-        router.get('/', express.json(), checkUserToken(), checkBody(this.paramsGetGroup), this.getGroup.bind(this))
+        router.get('/', checkUserToken(), checkQuery(this.queryGetGroup), this.getGroup.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsCreateGroup), this.createGroup.bind(this))
         router.patch('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsAddAnimalInGroup), this.addAnimalInGroup.bind(this))
         return router
