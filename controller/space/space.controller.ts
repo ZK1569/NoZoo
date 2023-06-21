@@ -82,7 +82,7 @@ export class SpacesController {
             { $push: { spaces: space } } 
         )
 
-        res.json(space)
+        res.status(201).json(space)
     }
 
     addAnimalGroup = async (req: Request, res: Response): Promise<void> => {
@@ -205,7 +205,7 @@ export class SpacesController {
                 { _id: req.body.spaceId },  
                 { $push: { maintenance_booklet: maintenance_task } } 
             )
-            res.status(200).end()
+            res.status(200).json(maintenance_task)
             return 
         }catch(err){
             res.status(500).json({"message": "This mistake will never happen"})

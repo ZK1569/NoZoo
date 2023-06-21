@@ -27,7 +27,7 @@ const startServer = async (): Promise<void> => {
     app.use(morgan("short"))
 
     app.get("/", (req:Request, res:Response) => {
-        res.send('Server up')
+        res.json({"message" : "Server up"})
     })
 
     const userController = new UserController()
