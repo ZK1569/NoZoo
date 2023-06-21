@@ -82,7 +82,7 @@ export class SpacesController {
             { $push: { spaces: space } } 
         )
 
-        res.json(space)
+        res.status(201).json(space)
     }
 
     addAnimalGroup = async (req: Request, res: Response): Promise<void> => {
