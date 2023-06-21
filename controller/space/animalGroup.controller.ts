@@ -38,7 +38,8 @@ export class AnimalGroupController{
                 animals: [],
                 max: req.body.max
             })
-            res.json(newGroup)
+            res.status(201).json(newGroup)
+            return 
 
         }catch(err: unknown){
             // If a group with the same name already exists then return an error 409

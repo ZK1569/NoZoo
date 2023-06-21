@@ -63,7 +63,8 @@ export class AnimalController {
                 date_of_birth: new Date(req.body.date),
                 health_booklet: []
             })
-            res.json(animal)
+            res.status(201).json(animal)
+            return 
 
         }catch(err: unknown){
             const me = err as {[key: string]: unknown}
