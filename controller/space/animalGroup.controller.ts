@@ -107,14 +107,19 @@ export class AnimalGroupController{
             res.status(400).json({"message": "Invalid ID"})
             return
         }
+    }
 
+    updateSpace = async (req:Request, res:Response):Promise<void> => {
 
+        res.status(509).json({"message": "Not donne"})
+        return 
     }
 
 
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', checkUserToken(), checkQuery(this.queryGetGroup), this.getGroup.bind(this))
+        router.patch('/space', express.json(), checkUserToken(), checkUserRole(RolesEnums.admin), this.updateSpace.bind(this))
         router.post('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsCreateGroup), this.createGroup.bind(this))
         router.patch('/', express.json(), checkUserToken(), checkUserRole(RolesEnums.veterinarian), checkBody(this.paramsAddAnimalInGroup), this.addAnimalInGroup.bind(this))
         return router

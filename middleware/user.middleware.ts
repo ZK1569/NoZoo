@@ -21,13 +21,18 @@ export function checkUserToken(): RequestHandler {
             return;
         }
         const token = parts[1];
-        const session = await SessionModel.findById(token).populate({
-            path: "user",
-            populate: {
-                path: "roles"
-            }
-        }).exec();
-        if(session === null) {
+        let session
+        try{
+            session = await SessionModel.findById(token).populate({
+                path: "user",
+                populate: {
+                    path: "roles"
+                }
+            }).exec();
+        }catch(err){
+            res.status(400).json({"message" : "This is not an acceptable token"})
+        }
+        if(!session) {
             res.status(401).end(); // unauthorized
             return;
         }
