@@ -55,6 +55,10 @@ export class TicketController {
             res.status(400).json({"message": "This is not a valid type ticket id"})
             return 
         }
+
+        if(!type_ticket){
+            res.status(404).json({"message" : "Your ticket type is not valid"})
+        }
         
         const ticket = await TicketModel.create({
             user: req.user,
