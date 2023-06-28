@@ -38,6 +38,11 @@ export class TicketController {
         
     }
 
+    getAllTypeTicket = async (req:Request, res:Response): Promise<void> => {
+        const tickets = await TypeTicketModel.find()
+        res.status(200).json(tickets)
+    }
+
     readonly paramsCreateTicket = {
         // More information : object is of type array of strings (Ex: ["64676e22f696d45da858af0f", "64676aead150ca46ce72ce61"])
         "type_ticket_id": "string",
@@ -207,6 +212,7 @@ export class TicketController {
     buildRouter = (): Router => {
         const router = express.Router()
         router.get('/', checkUserToken(), checkQuery(this.queryGetTicket), this.getTicket.bind(this))
+        router.get('/types', checkUserToken(), checkUserRole(RolesEnums.admin), this.getAllTypeTicket.bind(this))
         router.post("/", express.json(), checkUserToken(), checkUserRole(RolesEnums.guest), checkBody(this.paramsCreateTicket), this.createTicket.bind(this))
         router.patch('/zoo', express.json(), checkBody(this.paramsCheckTicketAccess),checkTicket(), this.checkTicketZooAccess.bind(this))
         router.patch('/space', express.json(), checkBody(this.paramsCheckTicketSpaceAccess), checkTicket(), this.checkTicketSpaceAccess.bind(this))
