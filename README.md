@@ -57,6 +57,8 @@ The API documentation can be found in the [API.md](API.md) file. It provides det
 ## Author
 
 Cristian URSU - GitHub [ZK1569](https://github.com/ZK1569)
+julien RIVIERE - GitHub [julienEcole](https://github.com/julienEcole)
+Samuel ATLANI - GitHub [SamEPK](https://github.com/SamEPK)
 
 ## License
 
